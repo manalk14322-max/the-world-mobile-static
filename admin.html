@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The World Mobile Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script defer src="admin.js"></script>
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="index.html">
+      <img src="assets/the-world-mobile-logo.jpeg" alt="The World Mobile logo">
+    </a>
+    <div class="admin-actions">
+      <a class="admin-link" href="index.html"><i class="ti ti-external-link"></i> View Store</a>
+      <button class="icon-btn" id="logout-btn" type="button" title="Logout"><i class="ti ti-logout"></i></button>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <section class="status-panel" id="setup-warning" hidden>
+      <i class="ti ti-alert-triangle"></i>
+      <div>
+        <strong>Supabase is not configured yet.</strong>
+        <span>Add your project URL and anon key in <code>supabase-config.js</code>, then run <code>supabase-schema.sql</code> in Supabase.</span>
+      </div>
+    </section>
+
+    <section class="status-panel" id="auth-notice" hidden>
+      <i class="ti ti-info-circle"></i>
+      <div>
+        <strong id="auth-notice-title">Login notice</strong>
+        <span id="auth-notice-message"></span>
+      </div>
+    </section>
+
+    <section class="login-panel" id="login-panel">
+      <div>
+        <span class="eyebrow">Admin Login</span>
+        <h1>Manage products</h1>
+        <p>Sign in with the Supabase user you create for your client.</p>
+      </div>
+      <form id="login-form" class="stack-form">
+        <label>Email
+          <input type="email" id="login-email" placeholder="client@email.com" required>
+        </label>
+        <label>Password
+          <input type="password" id="login-password" placeholder="Password" required>
+        </label>
+        <button class="primary-btn" type="submit"><i class="ti ti-login"></i> Login</button>
+      </form>
+    </section>
+
+    <section class="login-panel" id="password-panel" hidden>
+      <div>
+        <span class="eyebrow">Invitation Accepted</span>
+        <h1>Set admin password</h1>
+        <p>Create a password for this admin account. After saving, the product manager will open.</p>
+      </div>
+      <form id="password-form" class="stack-form">
+        <label>New password
+          <input type="password" id="new-password" minlength="6" placeholder="Minimum 6 characters" required>
+        </label>
+        <button class="primary-btn" type="submit"><i class="ti ti-key"></i> Save password</button>
+      </form>
+    </section>
+
+    <section class="admin-grid" id="admin-panel" hidden>
+      <form class="editor-panel" id="product-form">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">Product Editor</span>
+            <h1 id="form-title">Add product</h1>
+          </div>
+          <button class="secondary-btn" type="button" id="reset-form-btn"><i class="ti ti-plus"></i> New</button>
+        </div>
+
+        <input type="hidden" id="product-id">
+        <input type="hidden" id="existing-image-url">
+
+        <label>Product title
+          <input type="text" id="product-title" placeholder="Custom Floral Case" required>
+        </label>
+
+        <div class="two-col">
+          <label>Category
+            <select id="product-category" required>
+              <option value="photo-cover">Photo Covers</option>
+              <option value="iphone-covers">iPhone Covers</option>
+              <option value="samsung-covers">Samsung Covers</option>
+              <option value="redmi-covers">Redmi Covers</option>
+              <option value="oppo-covers">Oppo Covers</option>
+              <option value="google-pixel">Google Pixel</option>
+              <option value="airpod-covers">AirPod Covers</option>
+              <option value="screen-protectors">Screen Protectors</option>
+              <option value="camera-protectors">Camera Protectors</option>
+              <option value="smart-watches">Smart Watches</option>
+              <option value="watch-bands">Watch Bands</option>
+              <option value="sim-cards">SIM Cards</option>
+              <option value="mobile-accessories">Mobile Accessories</option>
+              <option value="cordon">Cordon</option>
+              <option value="travel-adapter">Travel Adapter</option>
+              <option value="memory-cards">Memory Cards</option>
+              <option value="headphones">Headphones</option>
+              <option value="speakers">Speakers</option>
+              <option value="offers">Offers</option>
+              <option value="phones">Phones</option>
+            </select>
+          </label>
+          <label>Badge
+            <select id="product-badge">
+              <option value="">None</option>
+              <option value="new">New</option>
+              <option value="trending">Trending</option>
+              <option value="sale">Sale</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="two-col">
+          <label>Price
+            <input type="number" id="product-price" min="0" step="0.01" placeholder="24.99" required>
+          </label>
+          <label>Old price
+            <input type="number" id="product-old-price" min="0" step="0.01" placeholder="Optional">
+          </label>
+        </div>
+
+        <label>Description
+          <textarea id="product-description" rows="4" placeholder="Short product details..." required></textarea>
+        </label>
+
+        <label>Device options
+          <input type="text" id="product-options" placeholder="iPhone 15, iPhone 14, Samsung S24">
+        </label>
+
+        <div class="two-col">
+          <label>Sort order
+            <input type="number" id="product-sort" value="100" step="1">
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="product-active" checked>
+            <span>Visible on website</span>
+          </label>
+        </div>
+
+        <label>Product image
+          <input type="file" id="product-image" accept="image/*">
+        </label>
+        <img class="preview-img" id="image-preview" alt="Product preview" hidden>
+
+        <button class="primary-btn" type="submit"><i class="ti ti-device-floppy"></i> Save product</button>
+      </form>
+
+      <section class="list-panel">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">Catalog</span>
+            <h2>Products</h2>
+          </div>
+          <button class="secondary-btn" id="refresh-btn" type="button"><i class="ti ti-refresh"></i> Refresh</button>
+        </div>
+        <div class="product-list" id="admin-product-list">
+          <p class="muted">Loading products...</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="admin-toast" hidden></div>
+</body>
+</html>

@@ -1,0 +1,730 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The World Mobile | Premium Cases, Accessories & Express Repairs</title>
+  <meta name="description" content="Shop customized photo cases, iPhone & Samsung covers, screen protectors, smart watches, and accessories. Express professional mobile repairs in Spain." />
+  <meta name="keywords" content="phone repair, custom cases, photo covers, screen protectors, iPhone covers, Samsung cases, travel adapters, mobile accessories" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The World Mobile | Premium Accessories & Repairs" />
+  <meta property="og:description" content="Design custom phone covers, browse high-end mobile accessories, and get instant price estimates for smartphone repair services." />
+  <meta property="og:image" content="assets/hero-bg.png" />
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+  
+  <!-- Main JS Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+
+  <!-- ==========================================
+       HEADER & NAVIGATION
+       ========================================== -->
+  <header class="shop-header" id="shop-header">
+    <div class="shop-container">
+      
+      <!-- Mockup Themed Logo -->
+      <a class="shop-logo" href="index.html" aria-label="The World Mobile Home">
+        <img class="logo-img" src="assets/the-world-mobile-logo.jpeg" alt="The World Mobile logo">
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="top-category-nav" id="mobile-drawer-menu" aria-label="Product categories">
+        <div class="mobile-menu-head">
+          <strong>The World <span>Mobile</span></strong>
+          <button type="button" class="mobile-menu-close" id="menu-close-btn" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="wix-browser-links">
+          <a href="#" class="active" onclick="scrollToElement('shop-header')">Home</a>
+          <a href="#customizer-section" class="desktop-nav-link" onclick="scrollToElement('customizer-section')">Phone Cases</a>
+          <a href="#products-section" class="desktop-nav-link" onclick="scrollToElement('products-section')">Screen Protectors</a>
+          <a href="#products-section" class="desktop-nav-link" onclick="scrollToElement('products-section')">Accessories</a>
+          
+          <!-- Mobile Drawer Exclusive Links -->
+          <a href="#customizer-section" class="mobile-menu-only" onclick="scrollToElement('customizer-section')"><i class="ti ti-palette"></i> Custom Photo Cover</a>
+          <a href="#products-section" class="mobile-menu-only" onclick="scrollToElement('products-section')"><i class="ti ti-package"></i> Browse Catalog</a>
+          <a href="#repair-section" class="mobile-menu-only" onclick="scrollToElement('repair-section')"><i class="ti ti-tool"></i> Express Repairs</a>
+          <a href="#offers-section" class="mobile-menu-only" onclick="scrollToElement('offers-section')"><i class="ti ti-flame"></i> Special Deals</a>
+        </div>
+      </nav>
+
+      <!-- Mockup Themed Search Form -->
+      <form class="shop-search" id="header-search-form" role="search">
+        <input id="global-search" type="search" placeholder="Search products..." aria-label="Search products" />
+        <button type="submit" class="header-search-btn">Search</button>
+      </form>
+
+      <!-- Mockup Action Icons -->
+      <div class="shop-actions">
+        <!-- Search icon (magnifier) -->
+        <button class="action-btn-header" aria-label="Toggle search" onclick="scrollToElement('products-section')">
+          <i class="ti ti-search"></i>
+        </button>
+        <!-- Favorites (heart) -->
+        <button class="action-btn-header" aria-label="View Favorites" onclick="alert('Favorites feature coming soon!')">
+          <i class="ti ti-heart"></i>
+        </button>
+        <!-- Shopping Cart (bag) -->
+        <button class="action-btn-header" id="cart-toggle-btn" aria-label="Open Shopping Cart">
+          <i class="ti ti-shopping-bag"></i>
+          <span class="badge" id="cart-count-badge">0</span>
+        </button>
+        <!-- Hamburger Toggle (styled round blue button) -->
+        <button class="action-menu-toggle" id="menu-toggle-btn" aria-label="Open menu">
+          <i class="ti ti-menu-2"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==========================================
+       HERO BANNER SECTION (MOCKUP THREE-COL LAYOUT)
+       ========================================== -->
+  <section class="hero-section container">
+    <div class="hero-layout">
+      
+      <!-- Left side: Floating Card (Premium Cases) -->
+      <div class="hero-col-side left">
+        <div class="hero-float-card">
+          <img src="assets/custom-case-floral-book.jpeg" alt="Custom floral phone case">
+          <h4>Custom photo cases</h4>
+        </div>
+      </div>
+
+      <!-- Center content: Copy, CTAs, Trust Badges -->
+      <div class="hero-col-center">
+        <span class="hero-tag-text">FAST MOBILE REPAIR AND ACCESSORIES IN SPAIN</span>
+        <h1 class="hero-title-main">Fast & reliable<br>mobile phone<br>repairs in Spain.</h1>
+        <p class="hero-desc-main">Screen repairs, battery replacements, water damage recovery, phone covers, protectors and accessories by trusted mobile specialists.</p>
+        
+        <!-- CTAs -->
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="scrollToElement('repair-section')"><i class="ti ti-bolt"></i> Get Free Quote</button>
+          <a href="https://wa.me/34600000000?text=Hello%20The%20World%20Mobile,%20I%20need%20a%20quote..." target="_blank" rel="noopener" class="btn btn-whatsapp-now"><i class="ti ti-brand-whatsapp"></i> WhatsApp Now</a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="hero-trust-badges">
+          <span class="trust-badge">5-Star 4.9 Rating</span>
+          <span class="trust-badge">5000+ Repairs</span>
+          <span class="trust-badge">Same-Day Service</span>
+        </div>
+      </div>
+
+      <!-- Right side: Floating Cards (Spain store, New arrivals) -->
+      <div class="hero-col-side right">
+        <!-- Top Card: Spain Store -->
+        <div class="hero-float-card store-card">
+          <div class="store-card-logo">
+            <svg viewBox="0 0 100 100" fill="none" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="44" stroke="#004ebd" stroke-width="8" />
+              <path d="M6 50H94" stroke="#ff6b00" stroke-width="8" />
+              <circle cx="50" cy="50" r="12" fill="#ff6b00" />
+            </svg>
+          </div>
+          <h4>Spain store</h4>
+        </div>
+        <!-- Bottom Card: New Arrivals -->
+        <div class="hero-float-card">
+          <img src="assets/custom-case-paris.jpeg" alt="Paris printed phone case">
+          <h4>New arrivals</h4>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================
+       FEATURES / VALUE PROP ROW
+       ========================================== -->
+  <section class="features-bar container">
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-icon">
+          <i class="ti ti-shield-check"></i>
+        </div>
+        <div class="feature-info">
+          <h3>Genuine Quality</h3>
+          <p>Top-tier components & covers</p>
+        </div>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">
+          <i class="ti ti-bolt"></i>
+        </div>
+        <div class="feature-info">
+          <h3>1-Hour Repair</h3>
+          <p>Instant screen & battery swap</p>
+        </div>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">
+          <i class="ti ti-truck"></i>
+        </div>
+        <div class="feature-info">
+          <h3>Free Shipping</h3>
+          <p>On orders above €50.00</p>
+        </div>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">
+          <i class="ti ti-brand-whatsapp"></i>
+        </div>
+        <div class="feature-info">
+          <h3>WhatsApp Ordering</h3>
+          <p>Fast support and easy checkout</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       STICKY CATEGORIES NAVIGATION
+       ========================================== -->
+  <div class="categories-section">
+    <div class="container categories-container" id="categories-tabs">
+      <button class="category-tab active"><i class="ti ti-apps"></i> All Products</button>
+      <button class="category-tab"><i class="ti ti-paint"></i> Photo Covers</button>
+      <button class="category-tab"><i class="ti ti-brand-apple"></i> iPhone Covers</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       CUSTOM PHOTO COVER DESIGNER
+       ========================================== -->
+  <section class="customizer-section container" id="customizer-section">
+    <div class="customizer-grid glass" style="padding: 40px; border-radius: var(--radius-lg);">
+      
+      <!-- Left side: Live Canvas Preview -->
+      <div class="preview-container">
+        <div class="phone-frame">
+          <div class="phone-camera"></div>
+          <div class="phone-canvas-wrapper">
+            <canvas id="customizer-canvas"></canvas>
+          </div>
+          <div class="phone-glare"></div>
+        </div>
+      </div>
+
+      <!-- Right side: Control Panel -->
+      <div class="customizer-controls">
+        <span class="hero-tag-text">Personalized Cases</span>
+        <h2 style="font-size: 32px; color: var(--text-primary);">Design Your Custom Cover</h2>
+        <p class="section-subtitle">Select your model, upload a favorite picture, and add text to generate a sleek cover layout.</p>
+        
+        <div class="control-group">
+          <label for="case-model">1. Select Phone Model</label>
+          <select id="case-model" class="input-select">
+            <option value="iPhone 15 Pro">iPhone 15 Pro</option>
+            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+            <option value="iPhone 14 Pro">iPhone 14 Pro</option>
+            <option value="Samsung Galaxy S24 Ultra">Samsung Galaxy S24 Ultra</option>
+            <option value="Google Pixel 8 Pro">Google Pixel 8 Pro</option>
+            <option value="Redmi Note 13 Pro">Redmi Note 13 Pro</option>
+            <option value="Oppo Reno 11 Pro">Oppo Reno 11 Pro</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>2. Base Case Background Color</label>
+          <div class="color-picker-group">
+            <button class="color-option active" data-color="#ffffff" style="background-color: #ffffff;" aria-label="White background"></button>
+            <button class="color-option" data-color="#000000" style="background-color: #000000;" aria-label="Black background"></button>
+            <button class="color-option" data-color="#1e3a8a" style="background-color: #1e3a8a;" aria-label="Dark Blue background"></button>
+            <button class="color-option" data-color="#7c2d12" style="background-color: #7c2d12;" aria-label="Terracotta background"></button>
+            <button class="color-option" data-color="#065f46" style="background-color: #065f46;" aria-label="Forest Green background"></button>
+            <button class="color-option" data-color="#581c87" style="background-color: #581c87;" aria-label="Deep Purple background"></button>
+            <button class="color-option" data-color="#ec4899" style="background-color: #ec4899;" aria-label="Pink background"></button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label>3. Upload custom Photo / Image</label>
+          <div class="file-upload-wrapper">
+            <button class="file-upload-btn"><i class="ti ti-upload"></i> Choose High-Res Photo</button>
+            <input type="file" id="case-upload" accept="image/*" aria-label="Upload Photo" />
+          </div>
+        </div>
+
+        <div class="control-group adjustment-sliders" id="customizer-adjustments">
+          <label>Image Fit Controls</label>
+          <div class="slider-row">
+            <div><span>Scale Image</span><span id="scale-val">100%</span></div>
+            <input type="range" id="adjust-scale" class="input-range" min="20" max="250" value="100" aria-label="Scale Image" />
+          </div>
+          <div class="slider-row">
+            <div><span>Horizontal Offset (X)</span></div>
+            <input type="range" id="adjust-x" class="input-range" min="-250" max="250" value="0" aria-label="Horizontal Offset" />
+          </div>
+          <div class="slider-row">
+            <div><span>Vertical Offset (Y)</span></div>
+            <input type="range" id="adjust-y" class="input-range" min="-500" max="500" value="0" aria-label="Vertical Offset" />
+          </div>
+          <div class="slider-row">
+            <div><span>Rotation Angle</span></div>
+            <input type="range" id="adjust-rotate" class="input-range" min="-180" max="180" value="0" aria-label="Rotation Angle" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="case-text">4. Add Printed Text (Optional)</label>
+          <input type="text" id="case-text" class="input-text" placeholder="Type name, initials or custom quotes..." />
+        </div>
+
+        <div class="control-group" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px;">
+          <div>
+            <label for="case-text-color">Text Ink Color</label>
+            <select id="case-text-color" class="input-select">
+              <option value="#000000">Ebony Black</option>
+              <option value="#ffffff" selected>Snow White</option>
+              <option value="#facc15">Solar Yellow</option>
+              <option value="#3b82f6">Ocean Blue</option>
+              <option value="#ef4444">Scarlet Red</option>
+            </select>
+          </div>
+          <div>
+            <label for="case-font-size">Font Size</label>
+            <input type="number" id="case-font-size" class="input-text" min="12" max="36" value="20" />
+          </div>
+        </div>
+
+        <div class="customizer-price-row">
+          <div>
+            <span class="customizer-price-label">Custom Cover Price</span>
+            <div class="customizer-price-value">€24.99</div>
+          </div>
+          <button class="btn btn-primary" id="add-custom-case-btn">
+            <i class="ti ti-shopping-cart-plus"></i> Add Customized Case
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       PRODUCT CATALOG CONTAINER
+       ========================================== -->
+  <section class="products-section container" id="products-section">
+    <div class="section-header">
+      <div class="section-info">
+        <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;">PREMIUM CATALOG</span>
+        <h2>Explore Our Accessories</h2>
+        <p>Premium covers, adapters, screen protectors, headphones & accessories.</p>
+      </div>
+      <div class="shop-search" style="flex: 0 1 350px; margin: 0; background: #ffffff; border-color: rgba(7, 28, 63, 0.1);">
+        <input id="body-search" type="search" placeholder="Search catalog..." aria-label="Search catalog" />
+      </div>
+    </div>
+
+    <!-- Catalog Grid -->
+    <div class="products-grid" id="products-grid">
+      <div class="product-card glass" style="opacity: 0.5; height: 350px; display: flex; align-items: center; justify-content: center;">
+        <p>Loading premium products...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       INTERACTIVE MOBILE REPAIR SYSTEM
+       ========================================== -->
+  <section class="repair-section container" id="repair-section">
+    <div class="repair-container">
+      
+      <!-- Left side: Promotional Graphics -->
+      <div class="repair-graphics">
+        <div class="repair-sphere"></div>
+        <div class="repair-badge-float glass" style="max-width: 420px; padding: 40px; text-align: left; background: #ffffff;">
+          <div class="repair-badge-icon" style="margin: 0 0 24px 0;">
+            <i class="ti ti-tool"></i>
+          </div>
+          <h2 style="font-size: 28px; margin-bottom: 12px; color: var(--text-primary);">Professional Repairs</h2>
+          <p style="margin-bottom: 20px; line-height: 1.6;">Our technicians specialize in screen replacements, complex back glass swaps, battery replacement, and charging connectors. We use premium certified components.</p>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; color: var(--text-secondary); font-size: 14px;">
+            <li><i class="ti ti-circle-check" style="color: var(--color-primary); margin-right: 8px;"></i> <strong>12-Month Guarantee</strong> on screens & battery swaps</li>
+            <li><i class="ti ti-circle-check" style="color: var(--color-primary); margin-right: 8px;"></i> <strong>Cleanroom Assembly</strong> to prevent dust particles</li>
+            <li><i class="ti ti-circle-check" style="color: var(--color-primary); margin-right: 8px;"></i> <strong>Same-Day Hand-Back</strong> on standard service items</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right side: Cost Calculator & Booking Form -->
+      <div class="repair-card glass">
+        <span class="hero-tag-text">Express Diagnostics</span>
+        <h2 style="margin-top: 10px;">Calculate Repair Cost</h2>
+        <p class="section-subtitle">Select your brand, model, and screen/component failure to see an instant quotation estimation.</p>
+        
+        <form class="repair-steps" id="repair-booking-form">
+          <div class="control-group">
+            <label for="repair-brand">1. Device Brand</label>
+            <select id="repair-brand" class="input-select" required>
+              <option value="">Select Phone Brand...</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="repair-model">2. Device Model</label>
+            <select id="repair-model" class="input-select" disabled required>
+              <option value="">Select Phone Model...</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="repair-issue">3. Component Issue</label>
+            <select id="repair-issue" class="input-select" disabled required>
+              <option value="">Select Repair Issue...</option>
+              <option value="screen">Broken Screen / Display Repair</option>
+              <option value="battery">Battery Aging / Replacement</option>
+              <option value="port">Charging Port / Connector Repair</option>
+              <option value="camera">Camera Lens Protective Glass swap</option>
+              <option value="back">Back Cover Glass replacement</option>
+            </select>
+          </div>
+
+          <!-- Live Pricing Block -->
+          <div class="estimate-box" id="repair-estimate">
+            <div>
+              <span class="estimate-label">Estimated Charge</span>
+              <div class="estimate-price" id="repair-price-val">€0.00</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="estimate-label">Duration</span>
+              <div style="font-weight: 700; font-size: 15px; margin-top: 4px; color: var(--text-primary);" id="repair-duration-val">45 mins</div>
+            </div>
+          </div>
+
+          <!-- Appointment inputs -->
+          <div class="control-group" style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 10px;">
+            <div>
+              <label for="booking-name">Full Name</label>
+              <input type="text" id="booking-name" class="input-text" placeholder="Your name" required />
+            </div>
+            <div>
+              <label for="booking-phone">Phone Number (WhatsApp)</label>
+              <input type="tel" id="booking-phone" class="input-text" placeholder="+34 600 000 000" required />
+            </div>
+          </div>
+
+          <div class="repair-btn-container">
+            <button type="submit" class="btn btn-primary" id="book-repair-btn" style="width: 100%;">
+              <i class="ti ti-calendar-plus"></i> Book & Add Repair to Cart
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SPECIAL OFFERS SECTION
+       ========================================== -->
+  <section class="offers-section container" id="offers-section">
+    <div class="offers-grid">
+      <div class="offer-banner-card banner-purple">
+        <span class="offer-label">Special Bundle Deal</span>
+        <h3 class="offer-title">Premium Screen Protector<br>& MagSafe Cover Pack</h3>
+        <p class="offer-desc">Buy any iPhone or Samsung case along with a 9H tempered glass screen protector and receive a €10 discount automatically!</p>
+        <div>
+          <button class="btn btn-primary" onclick="scrollToElement('products-section')">Shop Bundle</button>
+        </div>
+      </div>
+
+      <div class="offer-banner-card banner-cyan" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <span class="offer-label">Flash Sale Ending Soon</span>
+          <h3 class="offer-title">Save 10% Storewide</h3>
+          <p class="offer-desc">Use coupon code <strong>WELCOME10</strong> at checkout to claim your opening discount.</p>
+        </div>
+        
+        <div class="countdown-timer">
+          <div class="timer-segment"><span class="timer-number">00</span><span class="timer-label">Days</span></div>
+          <div class="timer-segment"><span class="timer-number">00</span><span class="timer-label">Hours</span></div>
+          <div class="timer-segment"><span class="timer-number">00</span><span class="timer-label">Mins</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       CONTACT, MAP & OPENING HOURS
+       ========================================== -->
+  <section class="container" id="contact-section" style="padding: 40px 0;">
+    <div class="glass contact-card">
+      <div>
+        <span class="hero-tag-text">Visit Our Location</span>
+        <h2 style="font-size: 32px; margin-bottom: 16px; color: var(--text-primary); margin-top: 8px;">The World Mobile</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 24px;">Drop by our retail store in Spain for support, sim cards, custom cases, or walk-in repairs.</p>
+        
+        <div class="footer-contact-info" style="gap: 20px;">
+          <div class="contact-item">
+            <i class="ti ti-map-pin"></i>
+            <div>
+              <strong>Store Address</strong><br>
+              Calle de Alcalá 123, 28009 Madrid, Spain
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="ti ti-phone"></i>
+            <div>
+              <strong>Customer Support</strong><br>
+              +34 600 000 000 (WhatsApp)
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="ti ti-clock"></i>
+            <div>
+              <strong>Opening Hours</strong><br>
+              Monday - Saturday: 10:00 - 21:00<br>
+              Sunday: Closed
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Simulated map graphic -->
+      <div class="store-map-card">
+        <div style="position: absolute; width: 100%; height: 100%; opacity: 0.05; background-image: radial-gradient(var(--color-primary) 1px, transparent 0), radial-gradient(var(--color-primary) 1px, transparent 0); background-size: 20px 20px; background-position: 0 0, 10px 10px;"></div>
+        <div style="text-align: center; z-index: 2; padding: 24px;">
+          <i class="ti ti-map-2" style="font-size: 48px; color: var(--color-primary); margin-bottom: 12px; display: block;"></i>
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);">Interactive Store Map</h3>
+          <p style="color: var(--text-secondary); font-size: 13px; max-width: 300px; margin-bottom: 16px;">Click below to open exact location routes on Google Maps navigation.</p>
+          <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">Open Navigation Map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       FOOTER SECTION
+       ========================================== -->
+  <footer class="footer-section">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <!-- Logo Column -->
+        <div class="footer-col footer-logo-col">
+          <a class="shop-logo" href="index.html">
+            <img class="logo-img footer-logo-img" src="assets/the-world-mobile-logo.jpeg" alt="The World Mobile logo">
+          </a>
+          <p>Your one-stop premium destination for customizable phone covers, rugged screen guards, adapters, SIM cards, and fast express electronics repair services.</p>
+          <div class="social-links">
+            <a href="https://facebook.com" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener" class="social-icon" aria-label="TikTok"><i class="ti ti-brand-tiktok"></i></a>
+          </div>
+        </div>
+
+        <!-- Shop Categories Column -->
+        <div class="footer-col">
+          <h4>Covers & Cases</h4>
+          <div class="footer-links">
+            <a href="#customizer-section"><i class="ti ti-palette"></i> Custom Photo Cases</a>
+            <a href="#products-section"><i class="ti ti-brand-apple"></i> iPhone Covers</a>
+            <a href="#products-section"><i class="ti ti-device-mobile"></i> Samsung Covers</a>
+            <a href="#products-section"><i class="ti ti-device-mobile-rotated"></i> Redmi Covers</a>
+            <a href="#products-section"><i class="ti ti-bolt"></i> Oppo Covers</a>
+            <a href="#products-section"><i class="ti ti-brand-google"></i> Google Pixel Cases</a>
+          </div>
+        </div>
+
+        <!-- Quick Info Links -->
+        <div class="footer-col">
+          <h4>Smart Tech</h4>
+          <div class="footer-links">
+            <a href="#products-section"><i class="ti ti-device-watch"></i> Smart Watches</a>
+            <a href="#products-section"><i class="ti ti-settings"></i> Watch Bands</a>
+            <a href="#products-section"><i class="ti ti-headphones"></i> Headphones</a>
+            <a href="#products-section"><i class="ti ti-volume"></i> Speakers</a>
+            <a href="#products-section"><i class="ti ti-shield"></i> Screen & Camera Glass</a>
+            <a href="#repair-section"><i class="ti ti-tool"></i> Repair Booking</a>
+          </div>
+        </div>
+
+        <!-- Contact/Newsletter -->
+        <div class="footer-col">
+          <h4>Store Support</h4>
+          <div class="footer-contact-info">
+            <div class="contact-item">
+              <i class="ti ti-map-pin"></i>
+              <span>Alcalá 123, Madrid, Spain</span>
+            </div>
+            <div class="contact-item">
+              <i class="ti ti-phone"></i>
+              <span>+34 600 000 000</span>
+            </div>
+            <div class="contact-item">
+              <i class="ti ti-mail"></i>
+              <span>support@theworldmobile.es</span>
+            </div>
+            <div class="contact-item">
+              <i class="ti ti-help"></i>
+              <span>Certified Tech Support</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Copyright Bottom -->
+      <div class="footer-bottom">
+        <div>&copy; 2026 The World Mobile. All Rights Reserved. Professional Phone Repair Spain.</div>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Delivery Info</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       SHOPPING CART DRAWER (RIGHT-SLIDING)
+       ========================================== -->
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h2><i class="ti ti-shopping-cart" style="color: var(--color-primary);"></i> Shopping Cart</h2>
+      <button class="cart-close-btn" id="cart-close-btn" aria-label="Close cart">&times;</button>
+    </div>
+
+    <!-- Items List container -->
+    <div class="cart-items" id="cart-items-list">
+      <div class="cart-empty-message">
+        <i class="ti ti-shopping-cart-x"></i>
+        <p>Your cart is empty</p>
+      </div>
+    </div>
+
+    <!-- Delivery Option & Checkout Info -->
+    <div id="cart-checkout-form-container">
+      <div class="cart-delivery-section">
+        <div class="delivery-options">
+          <button class="delivery-tab active" id="tab-pickup">Store Pickup (Free)</button>
+          <button class="delivery-tab" id="tab-delivery">Home Delivery (€4.99)</button>
+        </div>
+        
+        <!-- Checkout Delivery Address Form -->
+        <form class="checkout-form" id="cart-checkout-form">
+          <input type="text" id="shipping-name" placeholder="Full Name" required />
+          <input type="tel" id="shipping-phone" placeholder="WhatsApp Phone Number" required />
+          <textarea id="shipping-address" rows="2" placeholder="Full Delivery Address" style="display: none;"></textarea>
+          
+          <!-- Coupon Input -->
+          <div class="promo-code-row">
+            <input type="text" id="promo-input" placeholder="PROMO CODE" />
+            <button type="button" class="btn btn-secondary" id="apply-promo-btn" style="padding: 8px 16px;">Apply</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Cart summary footer -->
+      <div class="cart-footer">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="summary-subtotal">€0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span id="summary-shipping">Free</span>
+        </div>
+        <div class="summary-row" style="display: none; color: var(--color-success);">
+          <span>Coupon Discount</span>
+          <span id="summary-discount">-€0.00</span>
+        </div>
+        <div class="summary-row total">
+          <span>Estimated Total</span>
+          <span id="summary-total">€0.00</span>
+        </div>
+        <button type="submit" form="cart-checkout-form" class="btn btn-primary checkout-btn">
+          <i class="ti ti-brand-whatsapp"></i> Checkout via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer Backdrop Blur overlay -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+  <!-- ==========================================
+       PRODUCT DETAIL MODAL
+       ========================================== -->
+  <div class="modal-overlay" id="product-detail-modal">
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close details modal">&times;</button>
+      <div class="modal-body">
+        
+        <!-- Gallery -->
+        <div class="modal-gallery">
+          <img id="modal-main-img" src="" alt="Detail view image" />
+        </div>
+        
+        <!-- Info Content -->
+        <div class="modal-info">
+          <span class="modal-cat" id="modal-category">Category</span>
+          <h2 class="modal-title" id="modal-title">Product Name</h2>
+          
+          <div class="modal-price-row">
+            <span class="modal-price" id="modal-price">€0.00</span>
+            <span class="modal-old-price" id="modal-old-price" style="display: none;">€0.00</span>
+          </div>
+          
+          <p class="modal-desc" id="modal-desc">Detailed descriptions of item components and compatible features.</p>
+          
+          <!-- Variant Selector Options -->
+          <div class="modal-options" id="modal-options-wrapper">
+            <span class="modal-options-title">Select Device Compatibility</span>
+            <div class="modal-options-list" id="modal-options-list">
+              <!-- Options buttons added dynamically in JS -->
+            </div>
+          </div>
+          
+          <!-- Actions -->
+          <div class="modal-footer" id="modal-footer-action">
+            <button class="btn btn-primary" style="flex:1;"><i class="ti ti-shopping-cart"></i> Add to Cart</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       FLOATING WHATSAPP CHAT QUICK TRIGGER
+       ========================================== -->
+  <a href="https://wa.me/34600000000?text=Hello%20The%20World%20Mobile,%20I%20have%20a%20question%20regarding..." target="_blank" rel="noopener" class="whatsapp-float" id="whatsapp-quick-chat" aria-label="Chat with support on WhatsApp">
+    <i class="ti ti-brand-whatsapp"></i>
+  </a>
+
+  <!-- Simple script helper to handle showing/hiding address field in Drawer Form -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tabPickup = document.getElementById("tab-pickup");
+      const tabDelivery = document.getElementById("tab-delivery");
+      const addressField = document.getElementById("shipping-address");
+
+      if (tabPickup && tabDelivery && addressField) {
+        tabPickup.addEventListener("click", () => {
+          addressField.style.display = "none";
+        });
+        tabDelivery.addEventListener("click", () => {
+          addressField.style.display = "block";
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
