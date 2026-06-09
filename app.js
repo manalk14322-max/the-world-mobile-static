@@ -493,7 +493,8 @@ function initCategoryTabs() {
     { key: "headphones", name: "Headphones", icon: "ti-headphones" },
     { key: "speakers", name: "Speakers", icon: "ti-volume" },
     { key: "offers", name: "Offers", icon: "ti-percentage" },
-    { key: "phones", name: "Phones", icon: "ti-device-mobile" }
+    { key: "phones", name: "Phones", icon: "ti-device-mobile" },
+    { key: "mobile-repair", name: "Mobile Repair", icon: "ti-tool", target: "repair-section" }
   ];
 
   categories.forEach(cat => {
@@ -505,6 +506,12 @@ function initCategoryTabs() {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
+
+      if (cat.target) {
+        scrollToElement(cat.target);
+        return;
+      }
+
       selectedCategory = cat.key;
       filterAndRenderProducts();
     });
