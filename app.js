@@ -247,7 +247,228 @@ const fallbackProducts = [
   }
 ];
 
-let products = [...fallbackProducts];
+const siliconeCoverProducts = [
+  {
+    id: "silicone-iphone-sage-green",
+    title: "Silicone iPhone Cover - Sage Green",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-sage-green.jpeg",
+    description: "Soft-touch silicone cover with a smooth grip and raised edge protection. Compatible with iPhone 7/8 through iPhone 17 Pro Max.",
+    badge: "new",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-burgundy",
+    title: "Silicone iPhone Cover - Burgundy",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-burgundy.jpeg",
+    description: "Premium burgundy silicone case with a clean matte finish, comfortable buttons, and everyday shock protection.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-sky-blue",
+    title: "Silicone iPhone Cover - Sky Blue",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-sky-blue.jpeg",
+    description: "Light blue silicone cover with a soft touch feel and slim protective profile for daily use.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-forest-green",
+    title: "Silicone iPhone Cover - Forest Green",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-forest-green.jpeg",
+    description: "Deep green silicone case with a refined matte texture, snug fit, and raised camera protection.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-deep-purple",
+    title: "Silicone iPhone Cover - Deep Purple",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-deep-purple.jpeg",
+    description: "Deep purple silicone cover with soft grip, slim styling, and daily scratch resistance.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-orange",
+    title: "Silicone iPhone Cover - Orange",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-orange.jpeg",
+    description: "Bright orange silicone cover with a bold look, smooth hand feel, and protective raised edges.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-blush-pink",
+    title: "Silicone iPhone Cover - Blush Pink",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-blush-pink.jpeg",
+    description: "Soft blush pink silicone case with a minimal premium finish and everyday drop protection.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-royal-blue",
+    title: "Silicone iPhone Cover - Royal Blue",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-royal-blue.jpeg",
+    description: "Royal blue silicone cover with a premium matte grip, precise cutouts, and slim protection.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "silicone-iphone-black",
+    title: "Silicone iPhone Cover - Black",
+    category: "iphone-covers",
+    price: 14.99,
+    image: "assets/products/silicone-iphone-black.jpeg",
+    description: "Classic black silicone cover with clean styling, soft-touch grip, and daily phone protection.",
+    options: ["iPhone 7/8", "iPhone X/XS", "iPhone 11", "iPhone 12", "iPhone 13", "iPhone 14", "iPhone 15", "iPhone 16", "iPhone 17 Pro Max"]
+  },
+  {
+    id: "iphone-16-pro-max-purple",
+    title: "iPhone 16 Pro Max Silicone Cover - Purple",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-purple.jpeg",
+    description: "Premium iPhone 16 Pro Max silicone cover in purple with camera ring protection and a soft matte finish.",
+    badge: "new",
+    options: ["iPhone 16 Pro Max", "Color: Purple"]
+  },
+  {
+    id: "iphone-16-pro-max-navy-blue",
+    title: "iPhone 16 Pro Max Silicone Cover - Navy Blue",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-navy-blue.jpeg",
+    description: "Navy blue silicone cover made for iPhone 16 Pro Max with precise fit and smooth grip.",
+    options: ["iPhone 16 Pro Max", "Color: Navy Blue"]
+  },
+  {
+    id: "iphone-16-pro-max-red",
+    title: "iPhone 16 Pro Max Silicone Cover - Red",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-red.jpeg",
+    description: "Bold red iPhone 16 Pro Max silicone cover with slim protection and clean camera cutouts.",
+    options: ["iPhone 16 Pro Max", "Color: Red"]
+  },
+  {
+    id: "iphone-16-pro-max-sage-green",
+    title: "iPhone 16 Pro Max Silicone Cover - Sage Green",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-sage-green.jpeg",
+    description: "Sage green iPhone 16 Pro Max silicone case with soft-touch finish and raised edge protection.",
+    options: ["iPhone 16 Pro Max", "Color: Sage Green"]
+  },
+  {
+    id: "iphone-16-pro-max-hot-pink",
+    title: "iPhone 16 Pro Max Silicone Cover - Hot Pink",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-hot-pink.jpeg",
+    description: "Hot pink iPhone 16 Pro Max silicone cover for a bright look with everyday protection.",
+    options: ["iPhone 16 Pro Max", "Color: Hot Pink"]
+  },
+  {
+    id: "iphone-16-pro-max-white",
+    title: "iPhone 16 Pro Max Silicone Cover - White",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-white.jpeg",
+    description: "White silicone cover for iPhone 16 Pro Max with a clean minimalist finish and snug fit.",
+    options: ["iPhone 16 Pro Max", "Color: White"]
+  },
+  {
+    id: "iphone-16-pro-max-forest-green",
+    title: "iPhone 16 Pro Max Silicone Cover - Forest Green",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-forest-green.jpeg",
+    description: "Forest green iPhone 16 Pro Max case with soft matte texture and camera protection.",
+    options: ["iPhone 16 Pro Max", "Color: Forest Green"]
+  },
+  {
+    id: "iphone-16-pro-max-black",
+    title: "iPhone 16 Pro Max Silicone Cover - Black",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-black.jpeg",
+    description: "Black iPhone 16 Pro Max silicone cover with a timeless look, smooth grip, and raised camera edge.",
+    options: ["iPhone 16 Pro Max", "Color: Black"]
+  },
+  {
+    id: "iphone-16-pro-max-burgundy",
+    title: "iPhone 16 Pro Max Silicone Cover - Burgundy",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-burgundy.jpeg",
+    description: "Burgundy iPhone 16 Pro Max silicone cover with elegant color and everyday impact protection.",
+    options: ["iPhone 16 Pro Max", "Color: Burgundy"]
+  },
+  {
+    id: "iphone-16-pro-max-blush-pink",
+    title: "iPhone 16 Pro Max Silicone Cover - Blush Pink",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-blush-pink.jpeg",
+    description: "Blush pink iPhone 16 Pro Max silicone cover with soft premium feel and slim protection.",
+    options: ["iPhone 16 Pro Max", "Color: Blush Pink"]
+  },
+  {
+    id: "iphone-16-pro-max-royal-blue",
+    title: "iPhone 16 Pro Max Silicone Cover - Royal Blue",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-royal-blue.jpeg",
+    description: "Royal blue iPhone 16 Pro Max silicone cover with bold color and comfortable grip.",
+    options: ["iPhone 16 Pro Max", "Color: Royal Blue"]
+  },
+  {
+    id: "iphone-16-pro-max-sky-blue",
+    title: "iPhone 16 Pro Max Silicone Cover - Sky Blue",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-sky-blue.jpeg",
+    description: "Sky blue iPhone 16 Pro Max case with a soft matte texture and precise button fit.",
+    options: ["iPhone 16 Pro Max", "Color: Sky Blue"]
+  },
+  {
+    id: "iphone-16-pro-max-lavender",
+    title: "iPhone 16 Pro Max Silicone Cover - Lavender",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-lavender.jpeg",
+    description: "Lavender iPhone 16 Pro Max silicone cover with soft-touch finish and elegant pastel color.",
+    options: ["iPhone 16 Pro Max", "Color: Lavender"]
+  },
+  {
+    id: "iphone-16-pro-max-lime-green",
+    title: "iPhone 16 Pro Max Silicone Cover - Lime Green",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-lime-green.jpeg",
+    description: "Lime green iPhone 16 Pro Max silicone cover with bright color and slim daily protection.",
+    options: ["iPhone 16 Pro Max", "Color: Lime Green"]
+  },
+  {
+    id: "iphone-16-pro-max-orange",
+    title: "iPhone 16 Pro Max Silicone Cover - Orange",
+    category: "iphone-covers",
+    price: 19.99,
+    image: "assets/products/iphone-16-pro-max-orange.jpeg",
+    description: "Orange iPhone 16 Pro Max silicone cover with a bold finish, raised camera protection, and easy grip.",
+    options: ["iPhone 16 Pro Max", "Color: Orange"]
+  }
+];
+
+let products = [...siliconeCoverProducts, ...fallbackProducts];
 
 function getSupabaseConfig() {
   return window.TWM_SUPABASE_CONFIG || {};
