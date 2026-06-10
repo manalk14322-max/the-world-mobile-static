@@ -691,6 +691,7 @@ function initNavbarScroll() {
 
   const closeMobileMenu = () => {
     if (mobileMenu) mobileMenu.classList.remove("open");
+    document.body.classList.remove("menu-drawer-open");
     const cartDrawerOpen = document.getElementById("cart-drawer")?.classList.contains("open");
     if (backdrop && !cartDrawerOpen) {
       backdrop.classList.remove("show");
@@ -703,6 +704,7 @@ function initNavbarScroll() {
       mobileMenu.classList.add("open");
       if (backdrop) backdrop.classList.add("show");
       document.body.classList.add("drawer-open");
+      document.body.classList.add("menu-drawer-open");
     });
   }
 

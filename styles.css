@@ -162,6 +162,10 @@ button, input, select, textarea {
   background: rgba(255, 255, 255, 0.95);
 }
 
+body.menu-drawer-open .shop-header {
+  z-index: 1300;
+}
+
 .shop-container {
   width: 100%;
   max-width: 1400px;
