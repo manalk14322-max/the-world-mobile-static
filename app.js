@@ -12,6 +12,31 @@ const CONFIG = {
   currency: "€"
 };
 
+const STORE_CATEGORIES = [
+  { key: "all", name: "All Products", icon: "ti-apps" },
+  { key: "photo-cover", name: "Photo Covers", icon: "ti-paint" },
+  { key: "iphone-covers", name: "iPhone Covers", icon: "ti-brand-apple" },
+  { key: "samsung-covers", name: "Samsung Covers", icon: "ti-device-mobile" },
+  { key: "redmi-covers", name: "Redmi Covers", icon: "ti-device-mobile-rotated" },
+  { key: "oppo-covers", name: "Oppo Covers", icon: "ti-bolt" },
+  { key: "google-pixel", name: "Google Pixel", icon: "ti-brand-google" },
+  { key: "airpod-covers", name: "AirPod Covers", icon: "ti-headset" },
+  { key: "screen-protectors", name: "Screen Protectors", icon: "ti-shield" },
+  { key: "camera-protectors", name: "Camera Protectors", icon: "ti-camera" },
+  { key: "smart-watches", name: "Smart Watches", icon: "ti-device-watch" },
+  { key: "watch-bands", name: "Watch Bands", icon: "ti-settings" },
+  { key: "sim-cards", name: "SIM Cards", icon: "ti-sim-card" },
+  { key: "mobile-accessories", name: "Mobile Accessories", icon: "ti-plug" },
+  { key: "cordon", name: "Cordon", icon: "ti-sewing-kit" },
+  { key: "travel-adapter", name: "Travel Adapter", icon: "ti-bolt" },
+  { key: "memory-cards", name: "Memory Cards", icon: "ti-database" },
+  { key: "headphones", name: "Headphones", icon: "ti-headphones" },
+  { key: "speakers", name: "Speakers", icon: "ti-volume" },
+  { key: "offers", name: "Offers", icon: "ti-percentage" },
+  { key: "phones", name: "Phones", icon: "ti-device-mobile" },
+  { key: "mobile-repair", name: "Mobile Repair", icon: "ti-tool", target: "repair-section" }
+];
+
 // ---------------------------------------------------------
 // 1. PRODUCT DATABASE
 // ---------------------------------------------------------
@@ -619,8 +644,8 @@ const customizerState = {
 // 4. DOCUMENT LOAD & INITIALIZATION
 // ---------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
-  initNavbarScroll();
   initCategoryTabs();
+  initNavbarScroll();
   initSearch();
   await initProductCatalog();
   initCustomizerCanvas();
@@ -647,7 +672,18 @@ function initNavbarScroll() {
   const menuClose = document.getElementById("menu-close-btn");
   const mobileMenu = document.getElementById("mobile-drawer-menu");
   const backdrop = document.getElementById("drawer-backdrop");
-  const isMobileDrawerViewport = () => window.matchMedia("(max-width: 768px)").matches;
+  const menuLinks = mobileMenu?.querySelector(".wix-browser-links");
+
+  if (menuLinks) {
+    menuLinks.innerHTML = `
+      <a href="#shop-header" class="active" data-menu-home="true"><i class="ti ti-home"></i> Home</a>
+      ${STORE_CATEGORIES.map(cat => `
+        <a href="#${cat.target || "products-section"}" data-category="${cat.key}">
+          <i class="ti ${cat.icon}"></i> ${cat.name}
+        </a>
+      `).join("")}
+    `;
+  }
 
   const closeMobileMenu = () => {
     if (mobileMenu) mobileMenu.classList.remove("open");
@@ -660,10 +696,6 @@ function initNavbarScroll() {
 
   if (menuToggle && mobileMenu) {
     menuToggle.addEventListener("click", () => {
-      if (!isMobileDrawerViewport()) {
-        closeMobileMenu();
-        return;
-      }
       mobileMenu.classList.add("open");
       if (backdrop) backdrop.classList.add("show");
       document.body.classList.add("drawer-open");
@@ -682,17 +714,23 @@ function initNavbarScroll() {
   if (mobileMenu) {
     const navLinks = mobileMenu.querySelectorAll(".wix-browser-links a");
     navLinks.forEach(link => {
-      link.addEventListener("click", () => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        const categoryKey = link.getAttribute("data-category");
+        const category = STORE_CATEGORIES.find(cat => cat.key === categoryKey);
+
+        if (link.hasAttribute("data-menu-home")) {
+          document.querySelectorAll(".wix-browser-links a").forEach(item => item.classList.remove("active"));
+          link.classList.add("active");
+          scrollToElement("shop-header");
+        } else if (category) {
+          selectCategory(category);
+        }
+
         closeMobileMenu();
       });
     });
   }
-
-  window.addEventListener("resize", () => {
-    if (!isMobileDrawerViewport()) {
-      closeMobileMenu();
-    }
-  });
 }
 
 // ---------------------------------------------------------
@@ -705,51 +743,40 @@ function initCategoryTabs() {
   // Clear original static categories
   container.innerHTML = "";
 
-  const categories = [
-    { key: "all", name: "All Products", icon: "ti-apps" },
-    { key: "photo-cover", name: "Photo Covers", icon: "ti-paint" },
-    { key: "iphone-covers", name: "iPhone Covers", icon: "ti-brand-apple" },
-    { key: "samsung-covers", name: "Samsung Covers", icon: "ti-device-mobile" },
-    { key: "redmi-covers", name: "Redmi Covers", icon: "ti-device-mobile-rotated" },
-    { key: "oppo-covers", name: "Oppo Covers", icon: "ti-bolt" },
-    { key: "google-pixel", name: "Google Pixel", icon: "ti-brand-google" },
-    { key: "airpod-covers", name: "AirPod Covers", icon: "ti-headset" },
-    { key: "screen-protectors", name: "Screen Protectors", icon: "ti-shield" },
-    { key: "camera-protectors", name: "Camera Protectors", icon: "ti-camera" },
-    { key: "smart-watches", name: "Smart Watches", icon: "ti-device-watch" },
-    { key: "watch-bands", name: "Watch Bands", icon: "ti-settings" },
-    { key: "sim-cards", name: "SIM Cards", icon: "ti-sim-card" },
-    { key: "mobile-accessories", name: "Mobile Accessories", icon: "ti-plug" },
-    { key: "cordon", name: "Cordon", icon: "ti-sewing-kit" },
-    { key: "travel-adapter", name: "Travel Adapter", icon: "ti-bolt" },
-    { key: "memory-cards", name: "Memory Cards", icon: "ti-database" },
-    { key: "headphones", name: "Headphones", icon: "ti-headphones" },
-    { key: "speakers", name: "Speakers", icon: "ti-volume" },
-    { key: "offers", name: "Offers", icon: "ti-percentage" },
-    { key: "phones", name: "Phones", icon: "ti-device-mobile" },
-    { key: "mobile-repair", name: "Mobile Repair", icon: "ti-tool", target: "repair-section" }
-  ];
-
-  categories.forEach(cat => {
+  STORE_CATEGORIES.forEach(cat => {
     const tab = document.createElement("button");
     tab.className = `category-tab ${selectedCategory === cat.key ? 'active' : ''}`;
     tab.setAttribute("data-category", cat.key);
     tab.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
     
-    tab.addEventListener("click", () => {
-      document.querySelectorAll(".category-tab").forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-
-      if (cat.target) {
-        scrollToElement(cat.target);
-        return;
-      }
-
-      selectedCategory = cat.key;
-      filterAndRenderProducts();
-    });
+    tab.addEventListener("click", () => selectCategory(cat));
     
     container.appendChild(tab);
+  });
+}
+
+function selectCategory(cat) {
+  if (!cat) return;
+
+  syncCategoryControls(cat.key);
+
+  if (cat.target) {
+    scrollToElement(cat.target);
+    return;
+  }
+
+  selectedCategory = cat.key;
+  filterAndRenderProducts();
+  scrollToElement("products-section");
+}
+
+function syncCategoryControls(categoryKey) {
+  document.querySelectorAll(".category-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.getAttribute("data-category") === categoryKey);
+  });
+
+  document.querySelectorAll(".wix-browser-links a").forEach(link => {
+    link.classList.toggle("active", link.getAttribute("data-category") === categoryKey);
   });
 }
 
