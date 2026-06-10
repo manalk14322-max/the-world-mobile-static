@@ -493,7 +493,8 @@ const siliconeCoverProducts = [
   }
 ];
 
-let products = [...siliconeCoverProducts, ...fallbackProducts];
+const localCatalogProducts = [...siliconeCoverProducts, ...fallbackProducts];
+let products = [...localCatalogProducts];
 
 function getSupabaseConfig() {
   return window.TWM_SUPABASE_CONFIG || {};
@@ -530,7 +531,7 @@ function normalizeSupabaseProduct(row) {
 
 async function loadProductsFromSupabase() {
   const client = getSupabaseClient();
-  if (!client) return fallbackProducts;
+  if (!client) return localCatalogProducts;
 
   const cfg = getSupabaseConfig();
   const table = cfg.productsTable || "products";
@@ -544,10 +545,13 @@ async function loadProductsFromSupabase() {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data?.length ? data.map(normalizeSupabaseProduct) : fallbackProducts;
+    const supabaseProducts = data?.length ? data.map(normalizeSupabaseProduct) : [];
+    const supabaseProductIds = new Set(supabaseProducts.map(product => product.id));
+    const localOnlyProducts = localCatalogProducts.filter(product => !supabaseProductIds.has(product.id));
+    return [...supabaseProducts, ...localOnlyProducts];
   } catch (error) {
     console.warn("Supabase products could not be loaded. Using fallback catalog.", error);
-    return fallbackProducts;
+    return localCatalogProducts;
   }
 }
 
