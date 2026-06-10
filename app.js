@@ -850,15 +850,6 @@ function filterAndRenderProducts() {
       </button>
     `;
     
-    // Custom photo cover opens the designer
-    if (prod.isCustom) {
-      btnActionHTML = `
-        <button class="product-add-btn" onclick="scrollToElement('customizer-section')" aria-label="Design Custom Case">
-          <i class="ti ti-palette"></i>
-        </button>
-      `;
-    }
-
     return `
       <div class="product-card glass" id="prod-${prod.id}">
         ${badgeHTML}
@@ -868,10 +859,7 @@ function filterAndRenderProducts() {
             <button class="overlay-btn" onclick="openProductDetail('${prod.id}')" title="Quick View">
               <i class="ti ti-eye"></i>
             </button>
-            ${prod.isCustom ? 
-              `<button class="overlay-btn" onclick="scrollToElement('customizer-section')" title="Design Now"><i class="ti ti-palette"></i></button>` :
-              `<button class="overlay-btn" onclick="quickAddCart('${prod.id}')" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>`
-            }
+            <button class="overlay-btn" onclick="quickAddCart('${prod.id}')" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
           </div>
         </div>
         <div class="product-info">
@@ -1744,19 +1732,11 @@ window.openProductDetail = function(productId) {
   
   // Render Modal Cart Button
   const footer = document.getElementById("modal-footer-action");
-  if (prod.isCustom) {
-    footer.innerHTML = `
-      <button class="btn btn-primary" onclick="scrollToElement('customizer-section'); document.getElementById('product-detail-modal').classList.remove('open');" style="flex:1;">
-        <i class="ti ti-palette"></i> Design Custom Cover
-      </button>
-    `;
-  } else {
-    footer.innerHTML = `
-      <button class="btn btn-primary" onclick="addModalItemToCart()" style="flex:1;">
-        <i class="ti ti-shopping-cart"></i> Add to Shopping Cart
-      </button>
-    `;
-  }
+  footer.innerHTML = `
+    <button class="btn btn-primary" onclick="addModalItemToCart()" style="flex:1;">
+      <i class="ti ti-shopping-cart"></i> Add to Shopping Cart
+    </button>
+  `;
   
   modal.classList.add("open");
 };

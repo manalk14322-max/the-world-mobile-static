@@ -48,12 +48,12 @@
         </div>
         <div class="wix-browser-links">
           <a href="#" class="active" onclick="scrollToElement('shop-header')">Home</a>
-          <a href="#customizer-section" class="desktop-nav-link" onclick="scrollToElement('customizer-section')">Phone Cases</a>
+          <a href="#products-section" class="desktop-nav-link" onclick="scrollToElement('products-section')">Phone Cases</a>
           <a href="#products-section" class="desktop-nav-link" onclick="scrollToElement('products-section')">Screen Protectors</a>
           <a href="#products-section" class="desktop-nav-link" onclick="scrollToElement('products-section')">Accessories</a>
           
           <!-- Mobile Drawer Exclusive Links -->
-          <a href="#customizer-section" class="mobile-menu-only" onclick="scrollToElement('customizer-section')"><i class="ti ti-palette"></i> Custom Photo Cover</a>
+          <a href="#products-section" class="mobile-menu-only" onclick="scrollToElement('products-section')"><i class="ti ti-palette"></i> Custom Photo Cover</a>
           <a href="#products-section" class="mobile-menu-only" onclick="scrollToElement('products-section')"><i class="ti ti-package"></i> Browse Catalog</a>
           <a href="#repair-section" class="mobile-menu-only" onclick="scrollToElement('repair-section')"><i class="ti ti-tool"></i> Express Repairs</a>
           <a href="#offers-section" class="mobile-menu-only" onclick="scrollToElement('offers-section')"><i class="ti ti-flame"></i> Special Deals</a>
@@ -201,119 +201,6 @@
       <button class="category-tab"><i class="ti ti-brand-apple"></i> iPhone Covers</button>
     </div>
   </div>
-
-  <!-- ==========================================
-       CUSTOM PHOTO COVER DESIGNER
-       ========================================== -->
-  <section class="customizer-section container" id="customizer-section">
-    <div class="customizer-grid glass" style="padding: 40px; border-radius: var(--radius-lg);">
-      
-      <!-- Left side: Live Canvas Preview -->
-      <div class="preview-container">
-        <div class="phone-frame">
-          <div class="phone-camera"></div>
-          <div class="phone-canvas-wrapper">
-            <canvas id="customizer-canvas"></canvas>
-          </div>
-          <div class="phone-glare"></div>
-        </div>
-      </div>
-
-      <!-- Right side: Control Panel -->
-      <div class="customizer-controls">
-        <span class="hero-tag-text">Personalized Cases</span>
-        <h2 style="font-size: 32px; color: var(--text-primary);">Design Your Custom Cover</h2>
-        <p class="section-subtitle">Select your model, upload a favorite picture, and add text to generate a sleek cover layout.</p>
-        
-        <div class="control-group">
-          <label for="case-model">1. Select Phone Model</label>
-          <select id="case-model" class="input-select">
-            <option value="iPhone 15 Pro">iPhone 15 Pro</option>
-            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
-            <option value="iPhone 14 Pro">iPhone 14 Pro</option>
-            <option value="Samsung Galaxy S24 Ultra">Samsung Galaxy S24 Ultra</option>
-            <option value="Google Pixel 8 Pro">Google Pixel 8 Pro</option>
-            <option value="Redmi Note 13 Pro">Redmi Note 13 Pro</option>
-            <option value="Oppo Reno 11 Pro">Oppo Reno 11 Pro</option>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label>2. Base Case Background Color</label>
-          <div class="color-picker-group">
-            <button class="color-option active" data-color="#ffffff" style="background-color: #ffffff;" aria-label="White background"></button>
-            <button class="color-option" data-color="#000000" style="background-color: #000000;" aria-label="Black background"></button>
-            <button class="color-option" data-color="#1e3a8a" style="background-color: #1e3a8a;" aria-label="Dark Blue background"></button>
-            <button class="color-option" data-color="#7c2d12" style="background-color: #7c2d12;" aria-label="Terracotta background"></button>
-            <button class="color-option" data-color="#065f46" style="background-color: #065f46;" aria-label="Forest Green background"></button>
-            <button class="color-option" data-color="#581c87" style="background-color: #581c87;" aria-label="Deep Purple background"></button>
-            <button class="color-option" data-color="#ec4899" style="background-color: #ec4899;" aria-label="Pink background"></button>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label>3. Upload custom Photo / Image</label>
-          <div class="file-upload-wrapper">
-            <button class="file-upload-btn"><i class="ti ti-upload"></i> Choose High-Res Photo</button>
-            <input type="file" id="case-upload" accept="image/*" aria-label="Upload Photo" />
-          </div>
-        </div>
-
-        <div class="control-group adjustment-sliders" id="customizer-adjustments">
-          <label>Image Fit Controls</label>
-          <div class="slider-row">
-            <div><span>Scale Image</span><span id="scale-val">100%</span></div>
-            <input type="range" id="adjust-scale" class="input-range" min="20" max="250" value="100" aria-label="Scale Image" />
-          </div>
-          <div class="slider-row">
-            <div><span>Horizontal Offset (X)</span></div>
-            <input type="range" id="adjust-x" class="input-range" min="-250" max="250" value="0" aria-label="Horizontal Offset" />
-          </div>
-          <div class="slider-row">
-            <div><span>Vertical Offset (Y)</span></div>
-            <input type="range" id="adjust-y" class="input-range" min="-500" max="500" value="0" aria-label="Vertical Offset" />
-          </div>
-          <div class="slider-row">
-            <div><span>Rotation Angle</span></div>
-            <input type="range" id="adjust-rotate" class="input-range" min="-180" max="180" value="0" aria-label="Rotation Angle" />
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label for="case-text">4. Add Printed Text (Optional)</label>
-          <input type="text" id="case-text" class="input-text" placeholder="Type name, initials or custom quotes..." />
-        </div>
-
-        <div class="control-group" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px;">
-          <div>
-            <label for="case-text-color">Text Ink Color</label>
-            <select id="case-text-color" class="input-select">
-              <option value="#000000">Ebony Black</option>
-              <option value="#ffffff" selected>Snow White</option>
-              <option value="#facc15">Solar Yellow</option>
-              <option value="#3b82f6">Ocean Blue</option>
-              <option value="#ef4444">Scarlet Red</option>
-            </select>
-          </div>
-          <div>
-            <label for="case-font-size">Font Size</label>
-            <input type="number" id="case-font-size" class="input-text" min="12" max="36" value="20" />
-          </div>
-        </div>
-
-        <div class="customizer-price-row">
-          <div>
-            <span class="customizer-price-label">Custom Cover Price</span>
-            <div class="customizer-price-value">€24.99</div>
-          </div>
-          <button class="btn btn-primary" id="add-custom-case-btn">
-            <i class="ti ti-shopping-cart-plus"></i> Add Customized Case
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </section>
 
   <!-- ==========================================
        PRODUCT CATALOG CONTAINER
@@ -532,7 +419,7 @@
         <div class="footer-col">
           <h4>Covers & Cases</h4>
           <div class="footer-links">
-            <a href="#customizer-section"><i class="ti ti-palette"></i> Custom Photo Cases</a>
+            <a href="#products-section"><i class="ti ti-palette"></i> Custom Photo Cases</a>
             <a href="#products-section"><i class="ti ti-brand-apple"></i> iPhone Covers</a>
             <a href="#products-section"><i class="ti ti-device-mobile"></i> Samsung Covers</a>
             <a href="#products-section"><i class="ti ti-device-mobile-rotated"></i> Redmi Covers</a>
