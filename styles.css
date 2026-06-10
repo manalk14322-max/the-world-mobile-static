@@ -321,6 +321,7 @@ button, input, select, textarea {
 }
 
 .action-menu-toggle {
+  display: none;
   background: var(--color-primary);
   color: #ffffff;
   border-color: transparent;
@@ -2274,6 +2275,10 @@ button, input, select, textarea {
     width: 38px;
     height: 38px;
     font-size: 17px;
+  }
+
+  .action-menu-toggle {
+    display: flex;
   }
 
   .action-btn-header[aria-label="View Favorites"] {

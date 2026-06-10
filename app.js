@@ -647,17 +647,23 @@ function initNavbarScroll() {
   const menuClose = document.getElementById("menu-close-btn");
   const mobileMenu = document.getElementById("mobile-drawer-menu");
   const backdrop = document.getElementById("drawer-backdrop");
+  const isMobileDrawerViewport = () => window.matchMedia("(max-width: 768px)").matches;
 
   const closeMobileMenu = () => {
     if (mobileMenu) mobileMenu.classList.remove("open");
-    if (backdrop && !document.getElementById("cart-drawer")?.classList.contains("open")) {
+    const cartDrawerOpen = document.getElementById("cart-drawer")?.classList.contains("open");
+    if (backdrop && !cartDrawerOpen) {
       backdrop.classList.remove("show");
+      document.body.classList.remove("drawer-open");
     }
-    document.body.classList.remove("drawer-open");
   };
 
   if (menuToggle && mobileMenu) {
     menuToggle.addEventListener("click", () => {
+      if (!isMobileDrawerViewport()) {
+        closeMobileMenu();
+        return;
+      }
       mobileMenu.classList.add("open");
       if (backdrop) backdrop.classList.add("show");
       document.body.classList.add("drawer-open");
@@ -681,6 +687,12 @@ function initNavbarScroll() {
       });
     });
   }
+
+  window.addEventListener("resize", () => {
+    if (!isMobileDrawerViewport()) {
+      closeMobileMenu();
+    }
+  });
 }
 
 // ---------------------------------------------------------
