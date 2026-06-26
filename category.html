@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products | The World Mobile</title>
+  <meta name="description" content="Browse The World Mobile product categories, covers, accessories, protectors, phones, watches, and repair essentials." />
+  <link rel="icon" type="image/jpeg" href="assets/the-world-mobile-logo.jpeg" />
+  <link rel="apple-touch-icon" href="assets/the-world-mobile-logo.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body data-page="category">
+  <header class="shop-header" id="shop-header">
+    <div class="shop-container">
+      <a class="shop-logo" href="index.html" aria-label="The World Mobile Home">
+        <img class="logo-img" src="assets/the-world-mobile-logo.jpeg" alt="The World Mobile logo">
+      </a>
+
+      <nav class="main-nav-links" aria-label="Main navigation">
+        <a href="category.html?category=iphone-covers">Phone Cases</a>
+        <a href="index.html#repair-section">Repairs</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy-policy.html">Privacy</a>
+      </nav>
+
+      <nav class="top-category-nav" id="mobile-drawer-menu" aria-label="Product categories">
+        <div class="mobile-menu-head">
+          <strong>The World <span>Mobile</span></strong>
+          <button type="button" class="mobile-menu-close" id="menu-close-btn" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="wix-browser-links"></div>
+      </nav>
+
+      <form class="shop-search" id="header-search-form" role="search">
+        <input id="global-search" type="search" placeholder="Search this category..." aria-label="Search products" class="search-input" />
+        <button type="submit" class="header-search-btn" aria-label="Search"><i class="ti ti-search"></i></button>
+      </form>
+
+      <div class="shop-actions">
+        <button class="action-btn-header" aria-label="View Favorites" onclick="showToast('Favorites feature coming soon!', 'info')">
+          <i class="ti ti-heart"></i>
+        </button>
+        <button class="action-btn-header" id="cart-toggle-btn" aria-label="Open Shopping Cart">
+          <i class="ti ti-shopping-bag"></i>
+          <span class="badge" id="cart-count-badge">0</span>
+        </button>
+        <button class="action-menu-toggle" id="menu-toggle-btn" aria-label="Open menu">
+          <i class="ti ti-menu-2"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="category-page-hero container">
+      <div class="category-page-panel glass">
+        <span class="hero-tag-text" id="category-page-badge"><i class="ti ti-apps"></i> Products</span>
+        <h1 id="category-page-title">Products</h1>
+        <p id="category-page-subtitle">Browse premium products from The World Mobile.</p>
+      </div>
+    </section>
+
+    <div class="categories-section">
+      <div class="container categories-container" id="categories-tabs"></div>
+    </div>
+
+    <section class="products-section container" id="products-section">
+      <div class="section-header">
+        <div class="section-info">
+          <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;">CATEGORY PRODUCTS</span>
+          <h2>Available Items</h2>
+          <p>Choose a product, view details, and add it to your cart.</p>
+        </div>
+      </div>
+      <div class="products-grid" id="products-grid">
+        <div class="product-card glass" style="opacity: 0.5; height: 350px; display: flex; align-items: center; justify-content: center;">
+          <p>Loading products...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h2><i class="ti ti-shopping-cart" style="color: var(--color-primary);"></i> Shopping Cart</h2>
+      <button class="cart-close-btn" id="cart-close-btn" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items-list">
+      <div class="cart-empty-message">
+        <i class="ti ti-shopping-cart-x"></i>
+        <p>Your cart is empty</p>
+      </div>
+    </div>
+    <div id="cart-checkout-form-container">
+      <div class="cart-delivery-section">
+        <div class="delivery-options">
+          <button class="delivery-tab active" id="tab-pickup">Store Pickup (Free)</button>
+          <button class="delivery-tab" id="tab-delivery">Home Delivery (&euro;4.99)</button>
+        </div>
+        <form class="checkout-form" id="cart-checkout-form">
+          <input type="text" id="shipping-name" placeholder="Full Name" required />
+          <input type="tel" id="shipping-phone" placeholder="WhatsApp Phone Number" required />
+          <textarea id="shipping-address" rows="2" placeholder="Full Delivery Address" style="display: none;"></textarea>
+          <div class="promo-code-row">
+            <input type="text" id="promo-input" placeholder="PROMO CODE" />
+            <button type="button" class="btn btn-secondary" id="apply-promo-btn" style="padding: 8px 16px;">Apply</button>
+          </div>
+        </form>
+      </div>
+      <div class="cart-footer">
+        <div class="summary-row"><span>Subtotal</span><span id="summary-subtotal">&euro;0.00</span></div>
+        <div class="summary-row"><span>Shipping</span><span id="summary-shipping">Free</span></div>
+        <div class="summary-row" style="display: none; color: var(--color-success);"><span>Coupon Discount</span><span id="summary-discount">-&euro;0.00</span></div>
+        <div class="summary-row total"><span>Estimated Total</span><span id="summary-total">&euro;0.00</span></div>
+        <button type="submit" form="cart-checkout-form" class="btn btn-primary checkout-btn">
+          <i class="ti ti-brand-whatsapp"></i> Checkout via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+  <div class="modal-overlay" id="product-detail-modal">
+    <div class="modal-container">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close details modal">&times;</button>
+      <div class="modal-body">
+        <div class="modal-gallery">
+          <img id="modal-main-img" src="" alt="Detail view image" />
+        </div>
+        <div class="modal-info">
+          <span class="modal-cat" id="modal-category">Category</span>
+          <h2 class="modal-title" id="modal-title">Product Name</h2>
+          <div class="modal-price-row">
+            <span class="modal-price" id="modal-price">&euro;0.00</span>
+            <span class="modal-old-price" id="modal-old-price" style="display: none;">&euro;0.00</span>
+          </div>
+          <p class="modal-desc" id="modal-desc">Product details.</p>
+          <div class="modal-options" id="modal-options-wrapper">
+            <span class="modal-options-title">Select Device Compatibility</span>
+            <div class="modal-options-list" id="modal-options-list"></div>
+          </div>
+          <div class="modal-footer" id="modal-footer-action">
+            <button class="btn btn-primary" style="flex:1;"><i class="ti ti-shopping-cart"></i> Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/34600000000?text=Hello%20The%20World%20Mobile,%20I%20have%20a%20question%20regarding..." target="_blank" rel="noopener" class="whatsapp-float" id="whatsapp-quick-chat" aria-label="Chat with support on WhatsApp">
+    <i class="ti ti-brand-whatsapp"></i>
+  </a>
+</body>
+</html>

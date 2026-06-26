@@ -6,10 +6,10 @@
 
 // Configuration
 const CONFIG = {
-  whatsappNumber: "34600000000", // âš ï¸ TODO: Replace with the real WhatsApp number (country code + number, no + or spaces)
+  whatsappNumber: "34600000000", // TODO: Replace with the real WhatsApp number (country code + number, no + or spaces)
   baseShippingFee: 4.99,
   freeShippingThreshold: 50.00,
-  currency: "â‚¬"
+  currency: "€"
 };
 
 // ---------------------------------------------------------
@@ -706,6 +706,7 @@ const customizerState = {
 // 4. DOCUMENT LOAD & INITIALIZATION
 // ---------------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
+  initCategoryPageState();
   initCategoryTabs();
   initNavbarScroll();
   initSearch();
@@ -717,6 +718,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   initProductDetailModal();
   initOffersCountdown();
 });
+
+function isCategoryPage() {
+  return document.body?.dataset.page === "category";
+}
+
+function getCategoryByKey(categoryKey) {
+  return STORE_CATEGORIES.find(cat => cat.key === categoryKey) || STORE_CATEGORIES[0];
+}
+
+function getCategoryUrl(cat) {
+  if (!cat) return "category.html?category=all";
+  if (cat.target) return `index.html#${cat.target}`;
+  return `category.html?category=${encodeURIComponent(cat.key)}`;
+}
+
+function initCategoryPageState() {
+  if (!isCategoryPage()) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedCategory = params.get("category") || "all";
+  selectedCategory = getCategoryByKey(requestedCategory).key;
+  updateCategoryPageHeader(getCategoryByKey(selectedCategory));
+}
+
+function updateCategoryPageHeader(cat) {
+  if (!isCategoryPage() || !cat) return;
+
+  const title = document.getElementById("category-page-title");
+  const subtitle = document.getElementById("category-page-subtitle");
+  const badge = document.getElementById("category-page-badge");
+
+  if (title) title.textContent = cat.name;
+  if (subtitle) {
+    subtitle.textContent = cat.key === "all"
+      ? "Browse all premium covers, accessories, protectors, phones, watches, and repair essentials in one place."
+      : `Browse ${cat.name.toLowerCase()} available at The World Mobile.`;
+  }
+  if (badge) badge.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
+  document.title = `${cat.name} | The World Mobile`;
+}
 
 // Navbar scroll shadow & Mobile menu controls
 function initNavbarScroll() {
@@ -738,9 +779,9 @@ function initNavbarScroll() {
 
   if (menuLinks) {
     menuLinks.innerHTML = `
-      <a href="#shop-header" class="active" data-menu-home="true"><i class="ti ti-home"></i> Home</a>
+      <a href="index.html" class="active" data-menu-home="true"><i class="ti ti-home"></i> Home</a>
       ${STORE_CATEGORIES.map(cat => `
-        <a href="#${cat.target || "products-section"}" data-category="${cat.key}">
+        <a href="${getCategoryUrl(cat)}" data-category="${cat.key}">
           <i class="ti ${cat.icon}"></i> ${cat.name}
         </a>
       `).join("")}
@@ -750,6 +791,7 @@ function initNavbarScroll() {
       <a href="terms.html"><i class="ti ti-file-text"></i> Terms</a>
       <a href="delivery-info.html"><i class="ti ti-truck"></i> Delivery Info</a>
     `;
+    syncCategoryControls(selectedCategory);
   }
 
   const closeMobileMenu = () => {
@@ -794,15 +836,18 @@ function initNavbarScroll() {
     const navLinks = mobileMenu.querySelectorAll(".wix-browser-links a");
     navLinks.forEach(link => {
       link.addEventListener("click", (event) => {
-        event.preventDefault();
         const categoryKey = link.getAttribute("data-category");
         const category = STORE_CATEGORIES.find(cat => cat.key === categoryKey);
 
         if (link.hasAttribute("data-menu-home")) {
+          if (window.location.pathname.endsWith("index.html") || window.location.pathname.endsWith("/")) {
+            event.preventDefault();
+            scrollToElement("shop-header");
+          }
           document.querySelectorAll(".wix-browser-links a").forEach(item => item.classList.remove("active"));
           link.classList.add("active");
-          scrollToElement("shop-header");
-        } else if (category) {
+        } else if (category && isCategoryPage() && !category.target) {
+          event.preventDefault();
           selectCategory(category);
         }
 
@@ -823,12 +868,18 @@ function initCategoryTabs() {
   container.innerHTML = "";
 
   STORE_CATEGORIES.forEach(cat => {
-    const tab = document.createElement("button");
+    const tab = document.createElement("a");
     tab.className = `category-tab ${selectedCategory === cat.key ? 'active' : ''}`;
     tab.setAttribute("data-category", cat.key);
+    tab.href = getCategoryUrl(cat);
     tab.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
     
-    tab.addEventListener("click", () => selectCategory(cat));
+    tab.addEventListener("click", (event) => {
+      if (isCategoryPage() && !cat.target) {
+        event.preventDefault();
+        selectCategory(cat);
+      }
+    });
     
     container.appendChild(tab);
   });
@@ -840,11 +891,21 @@ function selectCategory(cat) {
   syncCategoryControls(cat.key);
 
   if (cat.target) {
-    scrollToElement(cat.target);
+    window.location.href = getCategoryUrl(cat);
+    return;
+  }
+
+  if (!isCategoryPage()) {
+    window.location.href = getCategoryUrl(cat);
     return;
   }
 
   selectedCategory = cat.key;
+  updateCategoryPageHeader(cat);
+  const nextUrl = getCategoryUrl(cat);
+  if (`${window.location.pathname.split("/").pop()}${window.location.search}` !== nextUrl) {
+    window.history.pushState({}, "", nextUrl);
+  }
   filterAndRenderProducts();
   scrollToElement("products-section");
 }
@@ -1343,7 +1404,7 @@ function initRepairEstimator() {
       saveCart();
       updateCartUI();
       openCartDrawer();
-      showToast(`Repair booking for ${modelName} added to cart! âœ…`, "success");
+      showToast(`Repair booking for ${modelName} added to cart!`, "success");
 
       // Reset form
       repairForm.reset();
@@ -1428,13 +1489,13 @@ function initCartDrawer() {
 
       if (code === "WELCOME10") {
         currentCoupon = { code: "WELCOME10", discountPercent: 10 };
-        showToast("ðŸŽ‰ Coupon applied! 10% discount activated.", "success");
+        showToast("Coupon applied! 10% discount activated.", "success");
       } else if (code === "FREESHIP") {
         currentCoupon = { code: "FREESHIP", freeShipping: true };
-        showToast("ðŸšš Free Shipping coupon applied!", "success");
+        showToast("Free shipping coupon applied!", "success");
       } else if (code === "REPAIR5") {
         currentCoupon = { code: "REPAIR5", discountAmount: 5.00, onlyRepair: true };
-        showToast("ðŸ”§ â‚¬5.00 off your repair booking applied!", "success");
+        showToast("EUR5.00 off your repair booking applied!", "success");
       } else {
         showToast(`"${code}" is not a valid coupon code.`, "error");
         currentCoupon = null;

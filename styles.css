@@ -1305,6 +1305,33 @@ body.menu-drawer-open .shop-header {
 }
 
 /* Product Section & Grid */
+.category-page-hero {
+  margin-top: var(--header-height);
+  padding: 34px 0 10px;
+}
+
+.category-page-panel {
+  padding: 34px;
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(235, 248, 255, 0.88) 58%, rgba(255, 246, 237, 0.9)),
+    url('assets/hero-bg.png') center / cover no-repeat;
+  overflow: hidden;
+}
+
+.category-page-panel h1 {
+  max-width: 760px;
+  margin: 8px 0 10px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1;
+}
+
+.category-page-panel p {
+  max-width: 720px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
 .products-section {
   padding: 60px 0;
 }
@@ -2799,6 +2826,19 @@ body.menu-drawer-open .shop-header {
   .offers-section,
   .custom-case-hero {
     padding: 34px 0;
+  }
+
+  .category-page-hero {
+    padding: 18px 0 8px;
+  }
+
+  .category-page-panel {
+    padding: 22px 16px;
+    border-radius: 18px;
+  }
+
+  .category-page-panel h1 {
+    font-size: clamp(30px, 10vw, 42px);
   }
 
   .features-bar {
