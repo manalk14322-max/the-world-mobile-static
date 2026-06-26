@@ -3,15 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The World Mobile | Premium Cases, Accessories & Express Repairs</title>
-  <meta name="description" content="Shop customized photo cases, iPhone & Samsung covers, screen protectors, smart watches, and accessories. Express professional mobile repairs in Spain." />
+  <title>The World Mobile | Premium Cases, Accessories &amp; Express Repairs</title>
+  <meta name="description" content="Shop customized photo cases, iPhone &amp; Samsung covers, screen protectors, smart watches, and accessories. Express professional mobile repairs in Spain." />
   <meta name="keywords" content="phone repair, custom cases, photo covers, screen protectors, iPhone covers, Samsung cases, travel adapters, mobile accessories" />
-  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://manalk14322-max.github.io/the-world-mobile-static/" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="assets/the-world-mobile-logo.jpeg" />
+  <link rel="apple-touch-icon" href="assets/the-world-mobile-logo.jpeg" />
+
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="The World Mobile | Premium Accessories & Repairs" />
+  <meta property="og:url" content="https://manalk14322-max.github.io/the-world-mobile-static/" />
+  <meta property="og:title" content="The World Mobile | Premium Accessories &amp; Repairs" />
   <meta property="og:description" content="Design custom phone covers, browse high-end mobile accessories, and get instant price estimates for smartphone repair services." />
-  <meta property="og:image" content="assets/hero-bg.png" />
+  <meta property="og:image" content="https://manalk14322-max.github.io/the-world-mobile-static/assets/hero-bg.png" />
   
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,6 +48,14 @@
         <img class="logo-img" src="assets/the-world-mobile-logo.jpeg" alt="The World Mobile logo">
       </a>
 
+      <nav class="main-nav-links" aria-label="Main navigation">
+        <a href="#products-section">Phone Cases</a>
+        <a href="#repair-section">Repairs</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy-policy.html">Privacy</a>
+      </nav>
+
       <!-- Desktop Nav Links -->
       <nav class="top-category-nav" id="mobile-drawer-menu" aria-label="Product categories">
         <div class="mobile-menu-head">
@@ -57,23 +73,26 @@
           <a href="#products-section" class="mobile-menu-only" onclick="scrollToElement('products-section')"><i class="ti ti-package"></i> Browse Catalog</a>
           <a href="#repair-section" class="mobile-menu-only" onclick="scrollToElement('repair-section')"><i class="ti ti-tool"></i> Express Repairs</a>
           <a href="#offers-section" class="mobile-menu-only" onclick="scrollToElement('offers-section')"><i class="ti ti-flame"></i> Special Deals</a>
+          
+          <!-- Important Static Pages -->
+          <a href="about.html"><i class="ti ti-info-circle"></i> About Us</a>
+          <a href="contact.html"><i class="ti ti-phone"></i> Contact</a>
+          <a href="privacy-policy.html"><i class="ti ti-shield"></i> Privacy Policy</a>
+          <a href="terms.html"><i class="ti ti-file-text"></i> Terms</a>
+          <a href="delivery-info.html"><i class="ti ti-truck"></i> Delivery Info</a>
         </div>
       </nav>
 
-      <!-- Mockup Themed Search Form -->
+      <!-- Professional Search Form -->
       <form class="shop-search" id="header-search-form" role="search">
-        <input id="global-search" type="search" placeholder="Search products..." aria-label="Search products" />
-        <button type="submit" class="header-search-btn">Search</button>
+        <input id="global-search" type="search" placeholder="Search products, brands, models..." aria-label="Search products" class="search-input" />
+        <button type="submit" class="header-search-btn" aria-label="Search"><i class="ti ti-search"></i></button>
       </form>
 
       <!-- Mockup Action Icons -->
       <div class="shop-actions">
-        <!-- Search icon (magnifier) -->
-        <button class="action-btn-header" aria-label="Toggle search" onclick="scrollToElement('products-section')">
-          <i class="ti ti-search"></i>
-        </button>
         <!-- Favorites (heart) -->
-        <button class="action-btn-header" aria-label="View Favorites" onclick="alert('Favorites feature coming soon!')">
+        <button class="action-btn-header" aria-label="View Favorites" onclick="showToast('Favorites feature coming soon!', 'info')">
           <i class="ti ti-heart"></i>
         </button>
         <!-- Shopping Cart (bag) -->
@@ -104,16 +123,19 @@
         </div>
       </div>
 
-      <!-- Center content: Copy, CTAs, Trust Badges -->
+     <!-- Center content: Copy, CTAs, Trust Badges -->
       <div class="hero-col-center">
-        <span class="hero-tag-text">FAST MOBILE REPAIR AND ACCESSORIES IN SPAIN</span>
-        <h1 class="hero-title-main">Fast & reliable<br>mobile phone<br>repairs in Spain.</h1>
-        <p class="hero-desc-main">Screen repairs, battery replacements, water damage recovery, phone covers, protectors and accessories by trusted mobile specialists.</p>
-        
+        <span class="hero-tag-text">PROTECT | ACCESSORIZE | ELEVATE</span>
+
+        <h1 class="hero-title-main">Custom mobile case printing available</h1>
+
+        <p class="hero-desc-main">
+          Create personalized covers with premium-quality printing for photos, logos, names, anime art, couple pictures, business branding, and custom designs.
+        </p>
         <!-- CTAs -->
         <div class="hero-ctas">
-          <button class="btn btn-primary" onclick="scrollToElement('repair-section')"><i class="ti ti-bolt"></i> Get Free Quote</button>
-          <a href="https://wa.me/34600000000?text=Hello%20The%20World%20Mobile,%20I%20need%20a%20quote..." target="_blank" rel="noopener" class="btn btn-whatsapp-now"><i class="ti ti-brand-whatsapp"></i> WhatsApp Now</a>
+          <button class="btn btn-primary" onclick="scrollToElement('products-section')"><i class="ti ti-shopping-bag"></i> Shop Covers</button>
+          <a href="https://wa.me/34600000000?text=Hello%20The%20World%20Mobile,%20I%20need%20a%20custom%20case%20quote..." target="_blank" rel="noopener" class="btn btn-whatsapp-now"><i class="ti ti-brand-whatsapp"></i> WhatsApp Now</a>
         </div>
 
         <!-- Trust Badges -->
@@ -176,7 +198,7 @@
         </div>
         <div class="feature-info">
           <h3>Free Shipping</h3>
-          <p>On orders above €50.00</p>
+          <p>On orders above â‚¬50.00</p>
         </div>
       </div>
       <div class="feature-card glass">
@@ -208,12 +230,9 @@
   <section class="products-section container" id="products-section">
     <div class="section-header">
       <div class="section-info">
-        <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;">PREMIUM CATALOG</span>
-        <h2>Explore Our Accessories</h2>
-        <p>Premium covers, adapters, screen protectors, headphones & accessories.</p>
-      </div>
-      <div class="shop-search" style="flex: 0 1 350px; margin: 0; background: #ffffff; border-color: rgba(7, 28, 63, 0.1);">
-        <input id="body-search" type="search" placeholder="Search catalog..." aria-label="Search catalog" />
+        <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;">FEATURED SELECTION</span>
+        <h2>Trending Products</h2>
+        <p>Bestselling covers, adapters, screen protectors, headphones & accessories you'll love.</p>
       </div>
     </div>
 
@@ -285,7 +304,7 @@
           <div class="estimate-box" id="repair-estimate">
             <div>
               <span class="estimate-label">Estimated Charge</span>
-              <div class="estimate-price" id="repair-price-val">€0.00</div>
+              <div class="estimate-price" id="repair-price-val">â‚¬0.00</div>
             </div>
             <div style="text-align: right;">
               <span class="estimate-label">Duration</span>
@@ -324,7 +343,7 @@
       <div class="offer-banner-card banner-purple">
         <span class="offer-label">Special Bundle Deal</span>
         <h3 class="offer-title">Premium Screen Protector<br>& MagSafe Cover Pack</h3>
-        <p class="offer-desc">Buy any iPhone or Samsung case along with a 9H tempered glass screen protector and receive a €10 discount automatically!</p>
+        <p class="offer-desc">Buy any iPhone or Samsung case along with a 9H tempered glass screen protector and receive a â‚¬10 discount automatically!</p>
         <div>
           <button class="btn btn-primary" onclick="scrollToElement('products-section')">Shop Bundle</button>
         </div>
@@ -361,7 +380,7 @@
             <i class="ti ti-map-pin"></i>
             <div>
               <strong>Store Address</strong><br>
-              Calle de Alcalá 123, 28009 Madrid, Spain
+              Calle de AlcalÃ¡ 123, 28009 Madrid, Spain
             </div>
           </div>
           <div class="contact-item">
@@ -389,7 +408,7 @@
           <i class="ti ti-map-2" style="font-size: 48px; color: var(--color-primary); margin-bottom: 12px; display: block;"></i>
           <h3 style="margin-bottom: 8px; color: var(--text-primary);">Interactive Store Map</h3>
           <p style="color: var(--text-secondary); font-size: 13px; max-width: 300px; margin-bottom: 16px;">Click below to open exact location routes on Google Maps navigation.</p>
-          <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">Open Navigation Map</a>
+          <a href="https://maps.google.com/?q=Calle+de+Alcal%C3%A1+123,+28009+Madrid,+Spain" target="_blank" rel="noopener" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">Open Navigation Map</a>
         </div>
       </div>
     </div>
@@ -447,7 +466,7 @@
           <div class="footer-contact-info">
             <div class="contact-item">
               <i class="ti ti-map-pin"></i>
-              <span>Alcalá 123, Madrid, Spain</span>
+              <span>AlcalÃ¡ 123, Madrid, Spain</span>
             </div>
             <div class="contact-item">
               <i class="ti ti-phone"></i>
@@ -470,9 +489,9 @@
       <div class="footer-bottom">
         <div>&copy; 2026 The World Mobile. All Rights Reserved. Professional Phone Repair Spain.</div>
         <div class="footer-bottom-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Delivery Info</a>
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="delivery-info.html">Delivery Info</a>
         </div>
       </div>
     </div>
@@ -500,7 +519,7 @@
       <div class="cart-delivery-section">
         <div class="delivery-options">
           <button class="delivery-tab active" id="tab-pickup">Store Pickup (Free)</button>
-          <button class="delivery-tab" id="tab-delivery">Home Delivery (€4.99)</button>
+          <button class="delivery-tab" id="tab-delivery">Home Delivery (â‚¬4.99)</button>
         </div>
         
         <!-- Checkout Delivery Address Form -->
@@ -521,7 +540,7 @@
       <div class="cart-footer">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span id="summary-subtotal">€0.00</span>
+          <span id="summary-subtotal">â‚¬0.00</span>
         </div>
         <div class="summary-row">
           <span>Shipping</span>
@@ -529,11 +548,11 @@
         </div>
         <div class="summary-row" style="display: none; color: var(--color-success);">
           <span>Coupon Discount</span>
-          <span id="summary-discount">-€0.00</span>
+          <span id="summary-discount">-â‚¬0.00</span>
         </div>
         <div class="summary-row total">
           <span>Estimated Total</span>
-          <span id="summary-total">€0.00</span>
+          <span id="summary-total">â‚¬0.00</span>
         </div>
         <button type="submit" form="cart-checkout-form" class="btn btn-primary checkout-btn">
           <i class="ti ti-brand-whatsapp"></i> Checkout via WhatsApp
@@ -564,8 +583,8 @@
           <h2 class="modal-title" id="modal-title">Product Name</h2>
           
           <div class="modal-price-row">
-            <span class="modal-price" id="modal-price">€0.00</span>
-            <span class="modal-old-price" id="modal-old-price" style="display: none;">€0.00</span>
+            <span class="modal-price" id="modal-price">â‚¬0.00</span>
+            <span class="modal-old-price" id="modal-old-price" style="display: none;">â‚¬0.00</span>
           </div>
           
           <p class="modal-desc" id="modal-desc">Detailed descriptions of item components and compatible features.</p>

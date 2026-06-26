@@ -6,10 +6,50 @@
 
 // Configuration
 const CONFIG = {
-  whatsappNumber: "34600000000", // Change this to the shop's real WhatsApp number (including country code)
+  whatsappNumber: "34600000000", // âš ï¸ TODO: Replace with the real WhatsApp number (country code + number, no + or spaces)
   baseShippingFee: 4.99,
   freeShippingThreshold: 50.00,
-  currency: "€"
+  currency: "â‚¬"
+};
+
+// ---------------------------------------------------------
+// UTILITY: Toast Notification System
+// ---------------------------------------------------------
+function showToast(message, type = "info") {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const icons = { success: "ti-circle-check", error: "ti-circle-x", info: "ti-info-circle" };
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<i class="ti ${icons[type] || icons.info}"></i><span>${message}</span>`;
+
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add("show"));
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+}
+
+// ---------------------------------------------------------
+// UTILITY: Close Cart Drawer (named function for inline use)
+// ---------------------------------------------------------
+window.closeCartDrawer = function() {
+  const cartDrawer = document.getElementById("cart-drawer");
+  const backdrop = document.getElementById("drawer-backdrop");
+  if (cartDrawer) cartDrawer.classList.remove("open");
+  if (backdrop) backdrop.classList.remove("show");
+  document.body.classList.remove("drawer-open");
 };
 
 const STORE_CATEGORIES = [
@@ -493,7 +533,25 @@ const siliconeCoverProducts = [
   }
 ];
 
-const localCatalogProducts = [...siliconeCoverProducts, ...fallbackProducts];
+function dedupeProductCatalog(productList) {
+  const seenIds = new Set();
+  const seenImages = new Set();
+
+  return productList.filter(product => {
+    const idKey = String(product.id || "").trim().toLowerCase();
+    const imageKey = String(product.image || "").split("?")[0].trim().toLowerCase();
+
+    if ((idKey && seenIds.has(idKey)) || (imageKey && seenImages.has(imageKey))) {
+      return false;
+    }
+
+    if (idKey) seenIds.add(idKey);
+    if (imageKey) seenImages.add(imageKey);
+    return true;
+  });
+}
+
+const localCatalogProducts = dedupeProductCatalog([...siliconeCoverProducts, ...fallbackProducts]);
 let products = [...localCatalogProducts];
 
 function getSupabaseConfig() {
@@ -548,7 +606,7 @@ async function loadProductsFromSupabase() {
     const supabaseProducts = data?.length ? data.map(normalizeSupabaseProduct) : [];
     const supabaseProductIds = new Set(supabaseProducts.map(product => product.id));
     const localOnlyProducts = localCatalogProducts.filter(product => !supabaseProductIds.has(product.id));
-    return [...supabaseProducts, ...localOnlyProducts];
+    return dedupeProductCatalog([...supabaseProducts, ...localOnlyProducts]);
   } catch (error) {
     console.warn("Supabase products could not be loaded. Using fallback catalog.", error);
     return localCatalogProducts;
@@ -686,6 +744,11 @@ function initNavbarScroll() {
           <i class="ti ${cat.icon}"></i> ${cat.name}
         </a>
       `).join("")}
+      <a href="about.html"><i class="ti ti-info-circle"></i> About Us</a>
+      <a href="contact.html"><i class="ti ti-phone"></i> Contact</a>
+      <a href="privacy-policy.html"><i class="ti ti-shield"></i> Privacy Policy</a>
+      <a href="terms.html"><i class="ti ti-file-text"></i> Terms</a>
+      <a href="delivery-info.html"><i class="ti ti-truck"></i> Delivery Info</a>
     `;
   }
 
@@ -697,6 +760,10 @@ function initNavbarScroll() {
       backdrop.classList.remove("show");
       document.body.classList.remove("drawer-open");
     }
+    if (menuToggle) {
+      menuToggle.setAttribute('aria-expanded', 'false');
+      try { menuToggle.focus(); } catch(e){}
+    }
   };
 
   if (menuToggle && mobileMenu) {
@@ -705,6 +772,12 @@ function initNavbarScroll() {
       if (backdrop) backdrop.classList.add("show");
       document.body.classList.add("drawer-open");
       document.body.classList.add("menu-drawer-open");
+      // Accessibility: indicate expanded state and move focus into menu
+      menuToggle.setAttribute('aria-expanded', 'true');
+      const firstFocusable = mobileMenu.querySelector('button, a, [tabindex]:not([tabindex="-1"])');
+      if (firstFocusable) {
+        try { firstFocusable.focus(); } catch (e) {}
+      }
     });
   }
 
@@ -863,7 +936,7 @@ function filterAndRenderProducts() {
           </div>
         </div>
         <div class="product-info">
-          <span class="product-category">${prod.category.replace("-", " ")}</span>
+          <span class="product-category">${prod.category.replace(/-/g, " ")}</span>
           <h3 class="product-title">${prod.title}</h3>
           <div class="product-bottom">
             <div class="product-price-wrapper">
@@ -1221,24 +1294,34 @@ function initRepairEstimator() {
       estimateBox.classList.remove("active");
     }
   }
-  
+
   // Repair form submit booking action
   const repairForm = document.getElementById("repair-booking-form");
   if (repairForm) {
     repairForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
       const brand = brandSelect.value;
       const model = modelSelect.value;
       const issue = issueSelect.value;
-      
-      if (!brand || !model || !issue) return;
-      
+      const customerName = document.getElementById("booking-name")?.value.trim();
+      const customerPhone = document.getElementById("booking-phone")?.value.trim();
+
+      if (!brand || !model || !issue) {
+        showToast("Please select a brand, model, and issue to continue.", "error");
+        return;
+      }
+
+      if (!customerName || !customerPhone) {
+        showToast("Please enter your name and WhatsApp number.", "error");
+        return;
+      }
+
       const brandName = repairPrices[brand].name;
       const modelName = repairPrices[brand].models[model].name;
       const issueName = repairServiceInfo[issue].name;
       const price = repairPrices[brand].models[model][issue];
-      
+
       const repairItem = {
         id: `repair-${brand}-${model}-${issue}-${Date.now()}`,
         title: `Repair: ${modelName}`,
@@ -1250,15 +1333,18 @@ function initRepairEstimator() {
           brand: brandName,
           model: modelName,
           issue: issueName,
+          customerName: customerName,
+          customerPhone: customerPhone,
           isRepair: true
         }
       };
-      
+
       cart.push(repairItem);
       saveCart();
       updateCartUI();
       openCartDrawer();
-      
+      showToast(`Repair booking for ${modelName} added to cart! âœ…`, "success");
+
       // Reset form
       repairForm.reset();
       modelSelect.disabled = true;
@@ -1330,22 +1416,27 @@ function initCartDrawer() {
   // Promo code validation
   const promoBtn = document.getElementById("apply-promo-btn");
   const promoInput = document.getElementById("promo-input");
-  
+
   if (promoBtn && promoInput) {
     promoBtn.addEventListener("click", () => {
       const code = promoInput.value.toUpperCase().trim();
-      
+
+      if (!code) {
+        showToast("Please enter a promo code first.", "error");
+        return;
+      }
+
       if (code === "WELCOME10") {
         currentCoupon = { code: "WELCOME10", discountPercent: 10 };
-        alert("Success! 10% Discount Applied.");
+        showToast("ðŸŽ‰ Coupon applied! 10% discount activated.", "success");
       } else if (code === "FREESHIP") {
         currentCoupon = { code: "FREESHIP", freeShipping: true };
-        alert("Success! Free Shipping Coupon Applied.");
+        showToast("ðŸšš Free Shipping coupon applied!", "success");
       } else if (code === "REPAIR5") {
         currentCoupon = { code: "REPAIR5", discountAmount: 5.00, onlyRepair: true };
-        alert("Success! €5.00 Off Mobile Repair Applied.");
+        showToast("ðŸ”§ â‚¬5.00 off your repair booking applied!", "success");
       } else {
-        alert("Invalid Coupon Code.");
+        showToast(`"${code}" is not a valid coupon code.`, "error");
         currentCoupon = null;
       }
       promoInput.value = "";
@@ -1360,7 +1451,7 @@ function initCartDrawer() {
       e.preventDefault();
       
       if (cart.length === 0) {
-        alert("Your cart is empty!");
+        showToast("Your cart is empty!", "error");
         return;
       }
       
@@ -1422,6 +1513,7 @@ window.quickAddCart = function(productId) {
   }
   
   openCartDrawer();
+  showToast(`${prod.title} added to cart!`, "success");
 };
 
 function saveCart() {
@@ -1471,7 +1563,7 @@ function updateCartUI() {
       <div class="cart-empty-message">
         <i class="ti ti-shopping-cart-x"></i>
         <p>Your cart is empty</p>
-        <button class="btn btn-secondary" onclick="document.getElementById('cart-drawer').classList.remove('open'); document.getElementById('drawer-backdrop').classList.remove('show'); document.body.classList.remove('drawer-open');" style="margin-top:16px; width: 100%;">Continue Shopping</button>
+        <button class="btn btn-secondary" onclick="closeCartDrawer()" style="margin-top:16px; width: 100%;">Continue Shopping</button>
       </div>
     `;
     if (formSection) formSection.classList.remove("active");
@@ -1704,7 +1796,7 @@ window.openProductDetail = function(productId) {
   // Populate content
   mainImg.src = prod.image;
   mainImg.alt = prod.title;
-  category.innerText = prod.category.replace("-", " ");
+  category.innerText = prod.category.replace(/-/g, " ");
   title.innerText = prod.title;
   price.innerText = `${CONFIG.currency}${prod.price.toFixed(2)}`;
   
@@ -1779,6 +1871,7 @@ window.addModalItemToCart = function() {
   activeDetailProductId = null;
   
   openCartDrawer();
+  showToast(`${prod.title} added to cart!`, "success");
 };
 
 // ---------------------------------------------------------
@@ -1787,24 +1880,33 @@ window.addModalItemToCart = function() {
 function initOffersCountdown() {
   const timers = document.querySelectorAll(".countdown-timer");
   if (timers.length === 0) return;
-  
-  // Set end date to exactly 3 days from now
-  const countdownEnd = new Date().getTime() + (3 * 24 * 60 * 60 * 1000);
-  
+
+  // Persist the countdown end date in localStorage so it doesn't reset on every page load
+  const STORAGE_KEY = "twm_countdown_end";
+  let countdownEnd = parseInt(localStorage.getItem(STORAGE_KEY));
+  const now = new Date().getTime();
+
+  if (!countdownEnd || countdownEnd < now) {
+    // Start a fresh 3-day countdown
+    countdownEnd = now + (3 * 24 * 60 * 60 * 1000);
+    localStorage.setItem(STORAGE_KEY, String(countdownEnd));
+  }
+
   function updateTimers() {
-    const now = new Date().getTime();
-    const distance = countdownEnd - now;
-    
-    if (distance < 0) {
-      timers.forEach(t => t.innerHTML = "Expired");
+    const remaining = countdownEnd - new Date().getTime();
+
+    if (remaining < 0) {
+      timers.forEach(t => {
+        t.innerHTML = `<div class="timer-segment"><span class="timer-number" style="font-size:14px; color:var(--color-danger);">EXPIRED</span></div>`;
+      });
       return;
     }
-    
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    
+
+    const days    = Math.floor(remaining / (1000 * 60 * 60 * 24));
+    const hours   = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
     timers.forEach(timer => {
       timer.innerHTML = `
         <div class="timer-segment">
@@ -1826,11 +1928,7 @@ function initOffersCountdown() {
       `;
     });
   }
-  
-  // Run immediately and then every second
+
   updateTimers();
   setInterval(updateTimers, 1000);
 }
-
-
-
