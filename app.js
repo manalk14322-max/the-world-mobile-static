@@ -1054,8 +1054,12 @@ function filterAndRenderProducts() {
           <div class="product-actions-overlay">
             <button class="overlay-btn" type="button" onclick="event.preventDefault(); window.location.href='${getProductUrl(prod)}';" title="View Details">
               <i class="ti ti-eye"></i>
+              <span>View</span>
             </button>
-            <button class="overlay-btn" type="button" onclick="event.preventDefault(); quickAddCart('${prod.id}')" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
+            <button class="overlay-btn" type="button" onclick="event.preventDefault(); quickAddCart('${prod.id}')" title="Add to Cart">
+              <i class="ti ti-shopping-cart"></i>
+              <span>Add</span>
+            </button>
           </div>
         </a>
         <div class="product-info">
