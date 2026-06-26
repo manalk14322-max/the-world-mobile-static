@@ -733,6 +733,10 @@ function getCategoryUrl(cat) {
   return `category.html?category=${encodeURIComponent(cat.key)}`;
 }
 
+function getProductUrl(prod) {
+  return `product.html?product=${encodeURIComponent(prod.id)}`;
+}
+
 function initCategoryPageState() {
   if (!isCategoryPage()) return;
 
@@ -757,6 +761,63 @@ function updateCategoryPageHeader(cat) {
   }
   if (badge) badge.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
   document.title = `${cat.name} | The World Mobile`;
+}
+
+function updateProductPage() {
+  if (document.body?.dataset.page !== "product") return;
+
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("product");
+  const prod = products.find(item => item.id === productId) || products[0];
+
+  const page = document.getElementById("product-page");
+  const empty = document.getElementById("product-page-empty");
+  if (!prod) {
+    if (page) page.style.display = "none";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+
+  if (page) page.style.display = "";
+  if (empty) empty.style.display = "none";
+
+  const category = getCategoryByKey(prod.category);
+  const title = document.getElementById("product-page-title");
+  const categoryEl = document.getElementById("product-page-category");
+  const image = document.getElementById("product-page-image");
+  const price = document.getElementById("product-page-price");
+  const oldPrice = document.getElementById("product-page-old-price");
+  const desc = document.getElementById("product-page-desc");
+  const options = document.getElementById("product-page-options");
+  const addBtn = document.getElementById("product-page-add");
+  const whatsapp = document.getElementById("product-page-whatsapp");
+  const breadcrumbCategory = document.getElementById("product-page-breadcrumb-category");
+
+  document.title = `${prod.title} | The World Mobile`;
+  if (title) title.textContent = prod.title;
+  if (categoryEl) categoryEl.innerHTML = `<i class="ti ${category.icon}"></i> ${category.name}`;
+  if (breadcrumbCategory) {
+    breadcrumbCategory.textContent = category.name;
+    breadcrumbCategory.href = getCategoryUrl(category);
+  }
+  if (image) {
+    image.src = prod.image;
+    image.alt = prod.title;
+  }
+  if (price) price.textContent = `${CONFIG.currency}${prod.price.toFixed(2)}`;
+  if (oldPrice) {
+    oldPrice.textContent = prod.oldPrice ? `${CONFIG.currency}${prod.oldPrice.toFixed(2)}` : "";
+    oldPrice.style.display = prod.oldPrice ? "inline" : "none";
+  }
+  if (desc) desc.textContent = prod.description || "Premium product from The World Mobile.";
+  if (options) {
+    options.innerHTML = (prod.options || []).map(option => `<span>${option}</span>`).join("");
+    options.style.display = prod.options?.length ? "flex" : "none";
+  }
+  if (addBtn) addBtn.onclick = () => quickAddCart(prod.id);
+  if (whatsapp) {
+    whatsapp.href = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(`Hello The World Mobile, I want details for: ${prod.title}`)}`;
+  }
 }
 
 // Navbar scroll shadow & Mobile menu controls
@@ -948,6 +1009,7 @@ function initSearch() {
 
 async function initProductCatalog() {
   products = await loadProductsFromSupabase();
+  updateProductPage();
   filterAndRenderProducts();
 }
 
@@ -987,18 +1049,18 @@ function filterAndRenderProducts() {
     return `
       <div class="product-card glass" id="prod-${prod.id}">
         ${badgeHTML}
-        <div class="product-image-container">
+        <a class="product-image-container" href="${getProductUrl(prod)}" aria-label="View ${prod.title}">
           <img src="${prod.image}" alt="${prod.title}" loading="lazy">
           <div class="product-actions-overlay">
-            <button class="overlay-btn" onclick="openProductDetail('${prod.id}')" title="Quick View">
+            <button class="overlay-btn" type="button" onclick="event.preventDefault(); window.location.href='${getProductUrl(prod)}';" title="View Details">
               <i class="ti ti-eye"></i>
             </button>
-            <button class="overlay-btn" onclick="quickAddCart('${prod.id}')" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
+            <button class="overlay-btn" type="button" onclick="event.preventDefault(); quickAddCart('${prod.id}')" title="Add to Cart"><i class="ti ti-shopping-cart"></i></button>
           </div>
-        </div>
+        </a>
         <div class="product-info">
           <span class="product-category">${prod.category.replace(/-/g, " ")}</span>
-          <h3 class="product-title">${prod.title}</h3>
+          <h3 class="product-title"><a href="${getProductUrl(prod)}">${prod.title}</a></h3>
           <div class="product-bottom">
             <div class="product-price-wrapper">
               <span class="product-price">${CONFIG.currency}${prod.price.toFixed(2)}</span>
@@ -1461,7 +1523,10 @@ function initCartDrawer() {
       tabPickup.classList.add("active");
       tabDelivery.classList.remove("active");
       deliveryMethod = "pickup";
-      if (addressField) addressField.required = false;
+      if (addressField) {
+        addressField.required = false;
+        addressField.style.display = "none";
+      }
       updateCartUI();
     });
     
@@ -1469,7 +1534,10 @@ function initCartDrawer() {
       tabDelivery.classList.add("active");
       tabPickup.classList.remove("active");
       deliveryMethod = "delivery";
-      if (addressField) addressField.required = true;
+      if (addressField) {
+        addressField.required = true;
+        addressField.style.display = "block";
+      }
       updateCartUI();
     });
   }
@@ -1546,7 +1614,7 @@ window.quickAddCart = function(productId) {
     existing.quantity += 1;
   } else {
     // Check if product has dropdown options, if yes, open detail modal instead
-    if (prod.options && prod.options.length > 0 && productId !== "photo-cover-custom") {
+    if (prod.options && prod.options.length > 0 && productId !== "photo-cover-custom" && document.getElementById("product-detail-modal")) {
       openProductDetail(productId);
       return;
     }
@@ -1557,7 +1625,8 @@ window.quickAddCart = function(productId) {
       price: prod.price,
       image: prod.image,
       category: prod.category,
-      quantity: 1
+      quantity: 1,
+      options: prod.options?.length ? { selected: prod.options[0] } : undefined
     });
   }
   
