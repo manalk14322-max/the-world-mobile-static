@@ -6,7 +6,7 @@
 
 // Configuration
 const CONFIG = {
-  whatsappNumber: "34600000000", // TODO: Replace with the real WhatsApp number (country code + number, no + or spaces)
+  whatsappNumber: "34674002687",
   baseShippingFee: 4.99,
   freeShippingThreshold: 50.00,
   currency: "€"
