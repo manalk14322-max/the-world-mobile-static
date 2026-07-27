@@ -598,9 +598,39 @@ function normalizeSupabaseProduct(row) {
   };
 }
 
+function normalizeLocalProduct(row) {
+  return {
+    id: String(row.id),
+    title: row.title || "Untitled Product",
+    category: row.category || "mobile-accessories",
+    price: Number(row.price || 0),
+    image: row.image_url || row.image || "assets/hero-bg.png",
+    description: row.description || "",
+    badge: row.badge || "",
+    oldPrice: row.old_price ? Number(row.old_price) : null,
+    options: Array.isArray(row.options) ? row.options : [],
+    isCustom: Boolean(row.is_custom),
+    is_active: row.is_active !== false,
+    sort_order: Number(row.sort_order || 100)
+  };
+}
+
+function getLocalCatalogProducts() {
+  try {
+    const raw = localStorage.getItem("twm_local_products");
+    if (!raw) return localCatalogProducts;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.length) return localCatalogProducts;
+    return dedupeProductCatalog(parsed.map(normalizeLocalProduct));
+  } catch (error) {
+    console.warn("Local product cache could not be read.", error);
+    return localCatalogProducts;
+  }
+}
+
 async function loadProductsFromSupabase() {
   const client = getSupabaseClient();
-  if (!client) return localCatalogProducts;
+  if (!client) return getLocalCatalogProducts();
 
   const cfg = getSupabaseConfig();
   const table = cfg.productsTable || "products";
@@ -616,11 +646,11 @@ async function loadProductsFromSupabase() {
     if (error) throw error;
     const supabaseProducts = data?.length ? data.map(normalizeSupabaseProduct) : [];
     const supabaseProductIds = new Set(supabaseProducts.map(product => product.id));
-    const localOnlyProducts = localCatalogProducts.filter(product => !supabaseProductIds.has(product.id));
+    const localOnlyProducts = getLocalCatalogProducts().filter(product => !supabaseProductIds.has(product.id));
     return dedupeProductCatalog([...supabaseProducts, ...localOnlyProducts]);
   } catch (error) {
     console.warn("Supabase products could not be loaded. Using fallback catalog.", error);
-    return localCatalogProducts;
+    return getLocalCatalogProducts();
   }
 }
 

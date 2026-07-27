@@ -3,6 +3,8 @@ const hasConfig = Boolean(cfg.url && cfg.anonKey && window.supabase?.createClien
 const client = hasConfig ? window.supabase.createClient(cfg.url, cfg.anonKey) : null;
 const tableName = cfg.productsTable || "products";
 const bucketName = cfg.storageBucket || "product-images";
+const LOCAL_PRODUCTS_KEY = "twm_local_products";
+const isLocalMode = !hasConfig;
 
 const CATEGORY_LABELS = {
   "photo-cover": "Photo Covers",
@@ -22,7 +24,7 @@ const CATEGORY_LABELS = {
   "travel-adapter": "Travel Adapter",
   "memory-cards": "Memory Cards",
   "headphones": "Headphones",
-  "speaker": "Speaker",
+  "speakers": "Speaker",
   "offers": "Offers",
   "phones": "Phones",
   "mobile-repair": "Mobile Repair"
@@ -117,6 +119,49 @@ function categoryLabel(key) {
   return CATEGORY_LABELS[key] || key || "Uncategorized";
 }
 
+function normalizeLocalProduct(row) {
+  return {
+    id: String(row.id || ""),
+    title: row.title || "Untitled product",
+    category: row.category || "photo-cover",
+    price: Number(row.price || 0),
+    old_price: row.old_price ?? null,
+    description: row.description || "",
+    image_url: row.image_url || row.image || "",
+    badge: row.badge || "",
+    options: Array.isArray(row.options) ? row.options : [],
+    is_custom: Boolean(row.is_custom),
+    is_active: row.is_active !== false,
+    sort_order: Number(row.sort_order || 100),
+    updated_at: row.updated_at || new Date().toISOString()
+  };
+}
+
+function readLocalProducts() {
+  try {
+    const raw = localStorage.getItem(LOCAL_PRODUCTS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map(normalizeLocalProduct) : [];
+  } catch (error) {
+    console.warn("Local product store could not be read.", error);
+    return [];
+  }
+}
+
+function saveLocalProducts(products) {
+  localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
+    reader.readAsDataURL(file);
+  });
+}
+
 function setPanelState(isLoggedIn) {
   if (loginPanel) loginPanel.hidden = isLoggedIn;
   if (passwordPanel) passwordPanel.hidden = true;
@@ -170,7 +215,7 @@ function fillForm(product) {
 async function uploadImage(file) {
   const existing = document.getElementById("existing-image-url").value;
   if (!file) return existing;
-  if (!client) return existing;
+  if (!client) return fileToDataUrl(file);
 
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
@@ -286,6 +331,13 @@ function renderProductList(items) {
       }
 
       if (action === "toggle") {
+        if (!client) {
+          catalogCache = catalogCache.map(item => item.id === id ? { ...item, is_active: !item.is_active } : item);
+          saveLocalProducts(catalogCache);
+          showToast(product.is_active ? "Product hidden." : "Product shown.");
+          renderProductList(applyFilters());
+          return;
+        }
         const { error } = await client.from(tableName).update({
           is_active: !product.is_active,
           updated_at: new Date().toISOString()
@@ -302,6 +354,13 @@ function renderProductList(items) {
       if (action === "delete") {
         const confirmed = confirm(`Delete "${product.title}"?`);
         if (!confirmed) return;
+        if (!client) {
+          catalogCache = catalogCache.filter(item => item.id !== id);
+          saveLocalProducts(catalogCache);
+          showToast("Product deleted.");
+          renderProductList(applyFilters());
+          return;
+        }
         const { error } = await client.from(tableName).delete().eq("id", id);
         if (error) {
           showToast(error.message);
@@ -316,7 +375,8 @@ function renderProductList(items) {
 
 async function loadProducts() {
   if (!client) {
-    productList.innerHTML = `<p class="muted">Connect Supabase to see products.</p>`;
+    catalogCache = readLocalProducts();
+    renderProductList(applyFilters());
     return;
   }
 
@@ -338,11 +398,6 @@ async function loadProducts() {
 
 async function saveProduct(event) {
   event.preventDefault();
-
-  if (!client) {
-    showToast("Connect Supabase first.");
-    return;
-  }
 
   try {
     const title = document.getElementById("product-title").value.trim();
@@ -379,6 +434,18 @@ async function saveProduct(event) {
       return;
     }
 
+    if (!client) {
+      const localProducts = readLocalProducts();
+      const nextProducts = localProducts.filter(item => item.id !== id);
+      nextProducts.unshift(payload);
+      saveLocalProducts(nextProducts);
+      catalogCache = nextProducts;
+      showToast("Product saved locally.");
+      resetForm();
+      renderProductList(applyFilters());
+      return;
+    }
+
     const { error } = await client.from(tableName).upsert(payload);
     if (error) throw error;
 
@@ -408,8 +475,17 @@ function bindFilters() {
 
 async function initAdmin() {
   if (!hasConfig) {
-    if (setupWarning) setupWarning.hidden = false;
-    setPanelState(false);
+    if (setupWarning) {
+      setupWarning.hidden = false;
+      setupWarning.querySelector("strong").textContent = "Local demo mode is active.";
+      setupWarning.querySelector("span").textContent = "You can add, edit, delete, and preview products now. Connect Supabase later if you want live sync across devices.";
+    }
+    showAuthNotice("Demo mode", "Supabase is not configured, so changes are saved in this browser only.");
+    setPanelState(true);
+    bindFilters();
+    catalogCache = readLocalProducts();
+    renderProductList(applyFilters());
+    document.getElementById("logout-btn").hidden = true;
     return;
   }
 
