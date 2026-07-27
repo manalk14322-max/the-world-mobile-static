@@ -33,6 +33,7 @@
   <!-- Main JS Logic -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+  <script src="lang.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -49,11 +50,11 @@
       </a>
 
       <nav class="main-nav-links" aria-label="Main navigation">
-        <a href="category.html?category=iphone-covers">Phone Cases</a>
-        <a href="#repair-section">Repairs</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="privacy-policy.html">Privacy</a>
+        <a href="category.html?category=iphone-covers" data-i18n="nav_phone_cases">Phone Cases</a>
+        <a href="#repair-section" data-i18n="nav_repairs">Repairs</a>
+        <a href="about.html" data-i18n="nav_about">About</a>
+        <a href="contact.html" data-i18n="nav_contact">Contact</a>
+        <a href="privacy-policy.html" data-i18n="nav_privacy">Privacy</a>
       </nav>
 
       <!-- Desktop Nav Links -->
@@ -63,7 +64,7 @@
           <button type="button" class="mobile-menu-close" id="menu-close-btn" aria-label="Close menu">&times;</button>
         </div>
         <div class="wix-browser-links">
-          <a href="#" class="active" onclick="scrollToElement('shop-header')">Home</a>
+          <a href="index.html" class="active" onclick="scrollToElement('shop-header')">Home</a>
           <a href="category.html?category=iphone-covers" class="desktop-nav-link">Phone Cases</a>
           <a href="category.html?category=screen-protectors" class="desktop-nav-link">Screen Protectors</a>
           <a href="category.html?category=mobile-accessories" class="desktop-nav-link">Accessories</a>
@@ -85,7 +86,7 @@
 
       <!-- Professional Search Form -->
       <form class="shop-search" id="header-search-form" role="search">
-        <input id="global-search" type="search" placeholder="Search products, brands, models..." aria-label="Search products" class="search-input" />
+        <input id="global-search" type="search" placeholder="Search products, brands, models..." aria-label="Search products" data-i18n="global_search_placeholder" data-i18n-attr="placeholder" class="search-input" />
         <button type="submit" class="header-search-btn" aria-label="Search"><i class="ti ti-search"></i></button>
       </form>
 
@@ -119,30 +120,30 @@
       <div class="hero-col-side left">
         <div class="hero-float-card">
           <img src="assets/custom-case-floral-book.jpeg" alt="Custom floral phone case">
-          <h4>Custom photo cases</h4>
+          <h4 data-i18n="hero_card_custom">Custom photo cases</h4>
         </div>
       </div>
 
      <!-- Center content: Copy, CTAs, Trust Badges -->
       <div class="hero-col-center">
-        <span class="hero-tag-text">PROTECT | ACCESSORIZE | ELEVATE</span>
+        <span class="hero-tag-text" data-i18n="hero_tag">PROTECT | ACCESSORIZE | ELEVATE</span>
 
-        <h1 class="hero-title-main">Custom mobile case printing available</h1>
+        <h1 class="hero-title-main" data-i18n="hero_title">Custom mobile case printing available</h1>
 
-        <p class="hero-desc-main">
+        <p class="hero-desc-main" data-i18n="hero_desc">
           Create personalized covers with premium-quality printing for photos, logos, names, anime art, couple pictures, business branding, and custom designs.
         </p>
         <!-- CTAs -->
         <div class="hero-ctas">
-          <button class="btn btn-primary" onclick="scrollToElement('products-section')"><i class="ti ti-shopping-bag"></i> Shop Covers</button>
-          <a href="https://wa.me/34674002687?text=Hello%20The%20World%20Mobile,%20I%20need%20a%20custom%20case%20quote..." target="_blank" rel="noopener" class="btn btn-whatsapp-now"><i class="ti ti-brand-whatsapp"></i> WhatsApp Now</a>
+          <button class="btn btn-primary" onclick="scrollToElement('products-section')"><i class="ti ti-shopping-bag"></i> <span data-i18n="hero_shop_covers">Shop Covers</span></button>
+          <a href="https://wa.me/34674002687?text=Hello%20The%20World%20Mobile,%20I%20need%20a%20custom%20case%20quote..." target="_blank" rel="noopener" class="btn btn-whatsapp-now"><i class="ti ti-brand-whatsapp"></i> <span data-i18n="hero_whatsapp_now">WhatsApp Now</span></a>
         </div>
 
         <!-- Trust Badges -->
         <div class="hero-trust-badges">
-          <span class="trust-badge">5-Star 4.9 Rating</span>
-          <span class="trust-badge">5000+ Repairs</span>
-          <span class="trust-badge">Same-Day Service</span>
+          <span class="trust-badge" data-i18n="hero_trust_1">5-Star 4.9 Rating</span>
+          <span class="trust-badge" data-i18n="hero_trust_2">5000+ Repairs</span>
+          <span class="trust-badge" data-i18n="hero_trust_3">Same-Day Service</span>
         </div>
       </div>
 
@@ -157,12 +158,12 @@
               <circle cx="50" cy="50" r="12" fill="#ff6b00" />
             </svg>
           </div>
-          <h4>Spain store</h4>
+          <h4 data-i18n="hero_card_spain_store">Spain store</h4>
         </div>
         <!-- Bottom Card: New Arrivals -->
         <div class="hero-float-card">
           <img src="assets/custom-case-paris.jpeg" alt="Paris printed phone case">
-          <h4>New arrivals</h4>
+          <h4 data-i18n="hero_card_new_arrivals">New arrivals</h4>
         </div>
       </div>
 
@@ -179,8 +180,8 @@
           <i class="ti ti-shield-check"></i>
         </div>
         <div class="feature-info">
-          <h3>Genuine Quality</h3>
-          <p>Top-tier components & covers</p>
+          <h3 data-i18n="feature_quality_title">Genuine Quality</h3>
+          <p data-i18n="feature_quality_text">Top-tier components & covers</p>
         </div>
       </div>
       <div class="feature-card glass">
@@ -188,8 +189,8 @@
           <i class="ti ti-bolt"></i>
         </div>
         <div class="feature-info">
-          <h3>1-Hour Repair</h3>
-          <p>Instant screen & battery swap</p>
+          <h3 data-i18n="feature_repair_title">1-Hour Repair</h3>
+          <p data-i18n="feature_repair_text">Instant screen & battery swap</p>
         </div>
       </div>
       <div class="feature-card glass">
@@ -197,8 +198,8 @@
           <i class="ti ti-truck"></i>
         </div>
         <div class="feature-info">
-          <h3>Free Shipping</h3>
-          <p>On orders above &euro;50.00</p>
+          <h3 data-i18n="feature_shipping_title">Free Shipping</h3>
+          <p data-i18n="feature_shipping_text">On orders above &euro;50.00</p>
         </div>
       </div>
       <div class="feature-card glass">
@@ -206,8 +207,8 @@
           <i class="ti ti-brand-whatsapp"></i>
         </div>
         <div class="feature-info">
-          <h3>WhatsApp Ordering</h3>
-          <p>Fast support and easy checkout</p>
+          <h3 data-i18n="feature_whatsapp_title">WhatsApp Ordering</h3>
+          <p data-i18n="feature_whatsapp_text">Fast support and easy checkout</p>
         </div>
       </div>
     </div>
@@ -230,9 +231,9 @@
   <section class="products-section container" id="products-section">
     <div class="section-header">
       <div class="section-info">
-        <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;">FEATURED SELECTION</span>
-        <h2>Trending Products</h2>
-        <p>Bestselling covers, adapters, screen protectors, headphones & accessories you'll love.</p>
+        <span class="hero-tag-text" style="margin-bottom: 8px; display: inline-block;" data-i18n="category_products_tag">FEATURED SELECTION</span>
+        <h2 data-i18n="category_products_title">Trending Products</h2>
+        <p data-i18n="category_products_desc">Bestselling covers, adapters, screen protectors, headphones & accessories you'll love.</p>
       </div>
     </div>
 
@@ -269,29 +270,29 @@
 
       <!-- Right side: Cost Calculator & Booking Form -->
       <div class="repair-card glass">
-        <span class="hero-tag-text">Express Diagnostics</span>
-        <h2 style="margin-top: 10px;">Calculate Repair Cost</h2>
-        <p class="section-subtitle">Select your brand, model, and screen/component failure to see an instant quotation estimation.</p>
+        <span class="hero-tag-text" data-i18n="repair_card_tag">Express Diagnostics</span>
+        <h2 style="margin-top: 10px;" data-i18n="repair_card_title">Calculate Repair Cost</h2>
+        <p class="section-subtitle" data-i18n="repair_card_desc">Select your brand, model, and screen/component failure to see an instant quotation estimation.</p>
         
         <form class="repair-steps" id="repair-booking-form">
           <div class="control-group">
-            <label for="repair-brand">1. Device Brand</label>
+            <label for="repair-brand" data-i18n="repair_brand_label">1. Device Brand</label>
             <select id="repair-brand" class="input-select" required>
-              <option value="">Select Phone Brand...</option>
+              <option value="" data-i18n="repair_brand_placeholder">Select Phone Brand...</option>
             </select>
           </div>
 
           <div class="control-group">
-            <label for="repair-model">2. Device Model</label>
+            <label for="repair-model" data-i18n="repair_model_label">2. Device Model</label>
             <select id="repair-model" class="input-select" disabled required>
-              <option value="">Select Phone Model...</option>
+              <option value="" data-i18n="repair_model_placeholder">Select Phone Model...</option>
             </select>
           </div>
 
           <div class="control-group">
-            <label for="repair-issue">3. Component Issue</label>
+            <label for="repair-issue" data-i18n="repair_issue_label">3. Component Issue</label>
             <select id="repair-issue" class="input-select" disabled required>
-              <option value="">Select Repair Issue...</option>
+              <option value="" data-i18n="repair_issue_placeholder">Select Repair Issue...</option>
               <option value="screen">Broken Screen / Display Repair</option>
               <option value="battery">Battery Aging / Replacement</option>
               <option value="port">Charging Port / Connector Repair</option>
@@ -315,18 +316,18 @@
           <!-- Appointment inputs -->
           <div class="control-group" style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 10px;">
             <div>
-              <label for="booking-name">Full Name</label>
-              <input type="text" id="booking-name" class="input-text" placeholder="Your name" required />
+              <label for="booking-name" data-i18n="booking_name_label">Full Name</label>
+              <input type="text" id="booking-name" class="input-text" placeholder="Your name" data-i18n="booking_name_placeholder" data-i18n-attr="placeholder" required />
             </div>
             <div>
-              <label for="booking-phone">Phone Number (WhatsApp)</label>
-              <input type="tel" id="booking-phone" class="input-text" placeholder="0034 674 002 687" required />
+              <label for="booking-phone" data-i18n="booking_phone_label">Phone Number (WhatsApp)</label>
+              <input type="tel" id="booking-phone" class="input-text" placeholder="0034 674 002 687" data-i18n="booking_phone_placeholder" data-i18n-attr="placeholder" required />
             </div>
           </div>
 
           <div class="repair-btn-container">
             <button type="submit" class="btn btn-primary" id="book-repair-btn" style="width: 100%;">
-              <i class="ti ti-calendar-plus"></i> Book & Add Repair to Cart
+              <i class="ti ti-calendar-plus"></i> <span data-i18n="book_repair_btn">Book & Add Repair to Cart</span>
             </button>
           </div>
         </form>
@@ -351,9 +352,9 @@
 
       <div class="offer-banner-card banner-cyan" style="display: flex; flex-direction: column; justify-content: space-between;">
         <div>
-          <span class="offer-label">Flash Sale Ending Soon</span>
-          <h3 class="offer-title">Save 10% Storewide</h3>
-          <p class="offer-desc">Use coupon code <strong>WELCOME10</strong> at checkout to claim your opening discount.</p>
+          <span class="offer-label" data-i18n="offers_flash_sale_label">Flash Sale Ending Soon</span>
+          <h3 class="offer-title" data-i18n="offers_flash_sale_title">Save 10% Storewide</h3>
+          <p class="offer-desc" data-i18n="offers_flash_sale_desc">Use coupon code <strong>WELCOME10</strong> at checkout to claim your opening discount.</p>
         </div>
         
         <div class="countdown-timer">
@@ -406,9 +407,9 @@
         <div style="position: absolute; width: 100%; height: 100%; opacity: 0.05; background-image: radial-gradient(var(--color-primary) 1px, transparent 0), radial-gradient(var(--color-primary) 1px, transparent 0); background-size: 20px 20px; background-position: 0 0, 10px 10px;"></div>
         <div style="text-align: center; z-index: 2; padding: 24px;">
           <i class="ti ti-map-2" style="font-size: 48px; color: var(--color-primary); margin-bottom: 12px; display: block;"></i>
-          <h3 style="margin-bottom: 8px; color: var(--text-primary);">Interactive Store Map</h3>
-          <p style="color: var(--text-secondary); font-size: 13px; max-width: 300px; margin-bottom: 16px;">Click below to open exact location routes on Google Maps navigation.</p>
-          <a href="https://maps.google.com/?q=Carrer+de+Lepant,+322,+Eixample,+08025+Barcelona,+Spain" target="_blank" rel="noopener" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;">Open Navigation Map</a>
+          <h3 style="margin-bottom: 8px; color: var(--text-primary);" data-i18n="contact_location_title">Interactive Store Map</h3>
+          <p style="color: var(--text-secondary); font-size: 13px; max-width: 300px; margin-bottom: 16px;" data-i18n="contact_location_desc">Click below to open exact location routes on Google Maps navigation.</p>
+          <a href="https://maps.google.com/?q=Carrer+de+Lepant,+322,+Eixample,+08025+Barcelona,+Spain" target="_blank" rel="noopener" class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" data-i18n="contact_navigation_btn">Open Navigation Map</a>
         </div>
       </div>
     </div>
@@ -436,33 +437,32 @@
 
         <!-- Shop Categories Column -->
         <div class="footer-col">
-          <h4>Covers & Cases</h4>
+          <h4 data-i18n="footer_covers">Covers & Cases</h4>
           <div class="footer-links">
-            <a href="category.html?category=photo-cover"><i class="ti ti-palette"></i> Custom Photo Cases</a>
-            <a href="category.html?category=iphone-covers"><i class="ti ti-brand-apple"></i> iPhone Covers</a>
-            <a href="category.html?category=samsung-covers"><i class="ti ti-device-mobile"></i> Samsung Covers</a>
-            <a href="category.html?category=redmi-covers"><i class="ti ti-device-mobile-rotated"></i> Redmi Covers</a>
-            <a href="category.html?category=oppo-covers"><i class="ti ti-bolt"></i> Oppo Covers</a>
-            <a href="category.html?category=google-pixel"><i class="ti ti-brand-google"></i> Google Pixel Cases</a>
+            <a href="category.html?category=photo-cover"><i class="ti ti-palette"></i> <span data-i18n="nav_custom_photo_cover">Custom Photo Cases</span></a>
+            <a href="category.html?category=iphone-covers"><i class="ti ti-brand-apple"></i> <span data-i18n="nav_iphone_covers">iPhone Covers</span></a>
+            <a href="category.html?category=samsung-covers"><i class="ti ti-device-mobile"></i> <span data-i18n="nav_samsung_covers">Samsung Covers</span></a>
+            <a href="category.html?category=redmi-covers"><i class="ti ti-device-mobile-rotated"></i> <span data-i18n="nav_redmi_covers">Redmi Covers</span></a>
+            <a href="category.html?category=oppo-covers"><i class="ti ti-bolt"></i> <span data-i18n="nav_oppo_covers">Oppo Covers</span></a>
+            <a href="category.html?category=google-pixel"><i class="ti ti-brand-google"></i> <span data-i18n="nav_google_pixel">Google Pixel Cases</span></a>
           </div>
         </div>
 
         <!-- Quick Info Links -->
         <div class="footer-col">
-          <h4>Smart Tech</h4>
+          <h4 data-i18n="footer_smart_tech">Smart Tech</h4>
           <div class="footer-links">
-            <a href="category.html?category=smart-watches"><i class="ti ti-device-watch"></i> Smart Watches</a>
-            <a href="category.html?category=watch-bands"><i class="ti ti-settings"></i> Watch Bands</a>
-            <a href="category.html?category=headphones"><i class="ti ti-headphones"></i> Headphones</a>
-            <a href="category.html?category=speakers"><i class="ti ti-volume"></i> Speakers</a>
-            <a href="category.html?category=screen-protectors"><i class="ti ti-shield"></i> Screen & Camera Glass</a>
-            <a href="#repair-section"><i class="ti ti-tool"></i> Repair Booking</a>
-          </div>
+            <a href="category.html?category=smart-watches"><i class="ti ti-device-watch"></i> <span data-i18n="nav_smart_watches">Smart Watches</span></a>
+            <a href="category.html?category=watch-bands"><i class="ti ti-settings"></i> <span data-i18n="nav_watch_bands">Watch Bands</span></a>
+            <a href="category.html?category=headphones"><i class="ti ti-headphones"></i> <span data-i18n="nav_headphones">Headphones</span></a>
+            <a href="category.html?category=speakers"><i class="ti ti-volume"></i> <span data-i18n="nav_speakers">Speakers</span></a>
+            <a href="category.html?category=screen-protectors"><i class="ti ti-shield"></i> <span data-i18n="nav_screen_protectors">Screen & Camera Glass</span></a>
+            <a href="#repair-section"><i class="ti ti-tool"></i> <span data-i18n="nav_mobile_repair">Repair Booking</span></a>
         </div>
 
         <!-- Contact/Newsletter -->
         <div class="footer-col">
-          <h4>Store Support</h4>
+          <h4 data-i18n="footer_support">Store Support</h4>
           <div class="footer-contact-info">
             <div class="contact-item">
               <i class="ti ti-map-pin"></i>
@@ -478,8 +478,7 @@
             </div>
             <div class="contact-item">
               <i class="ti ti-help"></i>
-              <span>Certified Tech Support</span>
-            </div>
+              <span data-i18n="support_certified">Certified Tech Support</span>
           </div>
         </div>
 
@@ -489,9 +488,9 @@
       <div class="footer-bottom">
         <div>&copy; 2026 The World Mobile. All Rights Reserved. Professional Phone Repair Spain.</div>
         <div class="footer-bottom-links">
-          <a href="privacy-policy.html">Privacy Policy</a>
-          <a href="terms.html">Terms of Service</a>
-          <a href="delivery-info.html">Delivery Info</a>
+          <a href="privacy-policy.html" data-i18n="footer_privacy">Privacy Policy</a>
+          <a href="terms.html" data-i18n="footer_terms">Terms of Service</a>
+          <a href="delivery-info.html" data-i18n="footer_delivery">Delivery Info</a>
         </div>
       </div>
     </div>

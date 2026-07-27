@@ -12,6 +12,17 @@ const CONFIG = {
   currency: "€"
 };
 
+const t = (key, fallback = "", params = null) => {
+  const raw = typeof getTranslation === "function" ? getTranslation(key, fallback) : (fallback || key);
+  if (!params) return raw;
+  return Object.keys(params).reduce((text, param) => {
+    const replacement = params[param] == null ? "" : String(params[param]);
+    return text.replace(new RegExp(`\\{${param}\\}`, "g"), replacement);
+  }, raw);
+};
+
+window.hasAppInit = true;
+
 // ---------------------------------------------------------
 // UTILITY: Toast Notification System
 // ---------------------------------------------------------
@@ -53,28 +64,28 @@ window.closeCartDrawer = function() {
 };
 
 const STORE_CATEGORIES = [
-  { key: "all", name: "All Products", icon: "ti-apps" },
-  { key: "photo-cover", name: "Photo Covers", icon: "ti-paint" },
-  { key: "iphone-covers", name: "iPhone Covers", icon: "ti-brand-apple" },
-  { key: "samsung-covers", name: "Samsung Covers", icon: "ti-device-mobile" },
-  { key: "redmi-covers", name: "Redmi Covers", icon: "ti-device-mobile-rotated" },
-  { key: "oppo-covers", name: "Oppo Covers", icon: "ti-bolt" },
-  { key: "google-pixel", name: "Google Pixel", icon: "ti-brand-google" },
-  { key: "airpod-covers", name: "AirPod Covers", icon: "ti-headset" },
-  { key: "screen-protectors", name: "Screen Protectors", icon: "ti-shield" },
-  { key: "camera-protectors", name: "Camera Protectors", icon: "ti-camera" },
-  { key: "smart-watches", name: "Smart Watches", icon: "ti-device-watch" },
-  { key: "watch-bands", name: "Watch Bands", icon: "ti-settings" },
-  { key: "sim-cards", name: "SIM Cards", icon: "ti-sim-card" },
-  { key: "mobile-accessories", name: "Mobile Accessories", icon: "ti-plug" },
-  { key: "cordon", name: "Cordon", icon: "ti-sewing-kit" },
-  { key: "travel-adapter", name: "Travel Adapter", icon: "ti-bolt" },
-  { key: "memory-cards", name: "Memory Cards", icon: "ti-database" },
-  { key: "headphones", name: "Headphones", icon: "ti-headphones" },
-  { key: "speakers", name: "Speakers", icon: "ti-volume" },
-  { key: "offers", name: "Offers", icon: "ti-percentage" },
-  { key: "phones", name: "Phones", icon: "ti-device-mobile" },
-  { key: "mobile-repair", name: "Mobile Repair", icon: "ti-tool", target: "repair-section" }
+  { key: "all", name: "All Products", name_es: "Todos los productos", icon: "ti-apps" },
+  { key: "photo-cover", name: "Photo Covers", name_es: "Fundas Personalizadas", icon: "ti-paint" },
+  { key: "iphone-covers", name: "iPhone Covers", name_es: "Fundas iPhone", icon: "ti-brand-apple" },
+  { key: "samsung-covers", name: "Samsung Covers", name_es: "Fundas Samsung", icon: "ti-device-mobile" },
+  { key: "redmi-covers", name: "Redmi Covers", name_es: "Fundas Redmi", icon: "ti-device-mobile-rotated" },
+  { key: "oppo-covers", name: "Oppo Covers", name_es: "Fundas Oppo", icon: "ti-bolt" },
+  { key: "google-pixel", name: "Google Pixel", name_es: "Google Pixel", icon: "ti-brand-google" },
+  { key: "airpod-covers", name: "AirPod Covers", name_es: "Fundas AirPods", icon: "ti-headset" },
+  { key: "screen-protectors", name: "Screen Protectors", name_es: "Protectores de Pantalla", icon: "ti-shield" },
+  { key: "camera-protectors", name: "Camera Protectors", name_es: "Protectores de Cámara", icon: "ti-camera" },
+  { key: "smart-watches", name: "Smart Watches", name_es: "Relojes Inteligentes", icon: "ti-device-watch" },
+  { key: "watch-bands", name: "Watch Bands", name_es: "Correas para Reloj", icon: "ti-settings" },
+  { key: "sim-cards", name: "SIM Cards", name_es: "Tarjetas SIM", icon: "ti-sim-card" },
+  { key: "mobile-accessories", name: "Mobile Accessories", name_es: "Accesorios Móviles", icon: "ti-plug" },
+  { key: "cordon", name: "Cordon", name_es: "Cordon", icon: "ti-sewing-kit" },
+  { key: "travel-adapter", name: "Travel Adapter", name_es: "Adaptador de Viaje", icon: "ti-bolt" },
+  { key: "memory-cards", name: "Memory Cards", name_es: "Tarjetas de Memoria", icon: "ti-database" },
+  { key: "headphones", name: "Headphones", name_es: "Auriculares", icon: "ti-headphones" },
+  { key: "speakers", name: "Speakers", name_es: "Altavoces", icon: "ti-volume" },
+  { key: "offers", name: "Offers", name_es: "Ofertas", icon: "ti-percentage" },
+  { key: "phones", name: "Phones", name_es: "Teléfonos", icon: "ti-device-mobile" },
+  { key: "mobile-repair", name: "Mobile Repair", name_es: "Reparación Móvil", icon: "ti-tool", target: "repair-section" }
 ];
 
 // ---------------------------------------------------------
@@ -717,6 +728,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   initCartDrawer();
   initProductDetailModal();
   initOffersCountdown();
+  initLanguageSwitcher();
+  setLanguage(currentLang);
 });
 
 function isCategoryPage() {
@@ -727,6 +740,11 @@ function getCategoryByKey(categoryKey) {
   return STORE_CATEGORIES.find(cat => cat.key === categoryKey) || STORE_CATEGORIES[0];
 }
 
+function getCategoryLabel(cat) {
+  if (!cat) return "";
+  return currentLang === "es" && cat.name_es ? cat.name_es : cat.name;
+}
+
 function getCategoryUrl(cat) {
   if (!cat) return "category.html?category=all";
   if (cat.target) return `index.html#${cat.target}`;
@@ -735,6 +753,145 @@ function getCategoryUrl(cat) {
 
 function getProductUrl(prod) {
   return `product.html?product=${encodeURIComponent(prod.id)}`;
+}
+
+function refreshLanguageTexts() {
+  initCategoryTabs();
+  renderMobileMenuLinks();
+  updateCategoryPageHeader(getCategoryByKey(selectedCategory));
+  updateProductPage();
+  refreshRepairTexts();
+  refreshCartTexts();
+  refreshProductDetailTexts();
+}
+
+function refreshRepairTexts() {
+  const brandSelect = document.getElementById("repair-brand");
+  const modelSelect = document.getElementById("repair-model");
+  const issueSelect = document.getElementById("repair-issue");
+  const estimateBox = document.getElementById("repair-estimate");
+  const priceVal = document.getElementById("repair-price-val");
+  const durationVal = document.getElementById("repair-duration-val");
+  const bookBtn = document.getElementById("book-repair-btn");
+
+  if (brandSelect && brandSelect.options.length) {
+    brandSelect.options[0].textContent = t("repair_brand_placeholder", "Select Phone Brand...");
+  }
+  if (modelSelect && modelSelect.options.length) {
+    modelSelect.options[0].textContent = t("repair_model_placeholder", "Select Phone Model...");
+  }
+  if (issueSelect && issueSelect.options.length) {
+    issueSelect.options[0].textContent = t("repair_issue_placeholder", "Select Repair Issue...");
+  }
+
+  const labels = [
+    ["repair-brand", "repair_brand_label"],
+    ["repair-model", "repair_model_label"],
+    ["repair-issue", "repair_issue_label"],
+    ["booking-name", "booking_name_label"],
+    ["booking-phone", "booking_phone_label"]
+  ];
+  labels.forEach(([forId, key]) => {
+    const label = document.querySelector(`label[for="${forId}"]`);
+    if (label) label.textContent = t(key, label.textContent);
+  });
+
+  const nameInput = document.getElementById("booking-name");
+  const phoneInput = document.getElementById("booking-phone");
+  if (nameInput) nameInput.placeholder = t("booking_name_placeholder", "Your name");
+  if (phoneInput) phoneInput.placeholder = t("booking_phone_placeholder", "0034 674 002 687");
+
+  if (bookBtn) bookBtn.innerHTML = `<i class="ti ti-calendar-plus"></i> ${t("book_repair_btn", "Book & Add Repair to Cart")}`;
+  if (estimateBox) estimateBox.classList.toggle("active", estimateBox.classList.contains("active"));
+  if (priceVal && priceVal.innerText === "") priceVal.innerText = `${CONFIG.currency}0.00`;
+  if (durationVal && !durationVal.innerText) durationVal.innerText = "45 mins";
+}
+
+function refreshCartTexts() {
+  const cartTitle = document.querySelector("#cart-drawer .cart-header h2");
+  const cartEmpty = document.querySelector("#cart-drawer .cart-empty-message p");
+  const checkoutBtn = document.querySelector("#cart-checkout-form-container .checkout-btn");
+  const tabPickup = document.getElementById("tab-pickup");
+  const tabDelivery = document.getElementById("tab-delivery");
+  const nameInput = document.getElementById("shipping-name");
+  const phoneInput = document.getElementById("shipping-phone");
+  const addressInput = document.getElementById("shipping-address");
+  const promoInput = document.getElementById("promo-input");
+  const promoBtn = document.getElementById("apply-promo-btn");
+  const emptyAction = document.querySelector("#cart-drawer .cart-empty-message .btn");
+
+  if (cartTitle) cartTitle.innerHTML = `<i class="ti ti-shopping-cart" style="color: var(--color-primary);"></i> ${t("cart_shopping_cart", "Shopping Cart")}`;
+  if (cartEmpty) cartEmpty.textContent = t("cart_empty", "Your cart is empty");
+  if (tabPickup) tabPickup.textContent = t("cart_pickup", "Store Pickup (Free)");
+  if (tabDelivery) tabDelivery.textContent = t("cart_delivery", "Home Delivery (€4.99)");
+  if (nameInput) nameInput.placeholder = t("booking_name_placeholder", "Full Name");
+  if (phoneInput) phoneInput.placeholder = t("booking_phone_placeholder", "WhatsApp Phone Number");
+  if (addressInput) addressInput.placeholder = t("booking_address_placeholder", "Full Delivery Address");
+  if (promoInput) promoInput.placeholder = t("cart_promo_placeholder", "PROMO CODE");
+  if (promoBtn) promoBtn.textContent = t("cart_apply_promo", "Apply");
+  if (checkoutBtn) checkoutBtn.innerHTML = `<i class="ti ti-brand-whatsapp"></i> ${t("cart_checkout_whatsapp", "Checkout via WhatsApp")}`;
+  if (emptyAction) emptyAction.textContent = t("cart_continue", "Continue Shopping");
+}
+
+function refreshProductDetailTexts() {
+  const modalFooter = document.getElementById("modal-footer-action");
+  const modalTitle = document.getElementById("modal-title");
+  const modalDesc = document.getElementById("modal-desc");
+  const modalOptionsTitle = document.querySelector("#modal-options-wrapper .modal-options-title");
+
+  if (modalOptionsTitle) modalOptionsTitle.textContent = t("modal_select_device", "Select Device Compatibility");
+  if (modalFooter) {
+    const btn = modalFooter.querySelector(".btn");
+    if (btn) btn.innerHTML = `<i class="ti ti-shopping-cart"></i> ${t("modal_add_to_cart", "Add to Shopping Cart")}`;
+  }
+  if (modalTitle && modalTitle.textContent === "Product Name") {
+    modalTitle.textContent = t("product_detail_title", "Product details");
+  }
+  if (modalDesc && modalDesc.textContent === "Product details.") {
+    modalDesc.textContent = t("product_detail_loading", "Loading product details...");
+  }
+}
+
+function renderMobileMenuLinks() {
+  const mobileMenu = document.getElementById("mobile-drawer-menu");
+  const menuLinks = mobileMenu?.querySelector(".wix-browser-links");
+  if (!menuLinks) return;
+
+  menuLinks.innerHTML = `
+      <a href="index.html" class="active" data-menu-home="true">${t("nav_home", "Home")}</a>
+      ${STORE_CATEGORIES.map(cat => `
+        <a href="${getCategoryUrl(cat)}" data-category="${cat.key}">
+          <i class="ti ${cat.icon}"></i> ${getCategoryLabel(cat)}
+        </a>
+      `).join("")}
+      <a href="about.html"><i class="ti ti-info-circle"></i> ${t("nav_about_us", "About Us")}</a>
+      <a href="contact.html"><i class="ti ti-phone"></i> ${t("nav_contact", "Contact")}</a>
+      <a href="privacy-policy.html"><i class="ti ti-shield"></i> ${t("nav_privacy_policy", "Privacy Policy")}</a>
+      <a href="terms.html"><i class="ti ti-file-text"></i> ${t("nav_terms", "Terms")}</a>
+      <a href="delivery-info.html"><i class="ti ti-truck"></i> ${t("nav_delivery", "Delivery Info")}</a>
+    `;
+
+  const navLinks = menuLinks.querySelectorAll("a");
+  navLinks.forEach(link => {
+    link.addEventListener("click", (event) => {
+      const categoryKey = link.getAttribute("data-category");
+      const category = STORE_CATEGORIES.find(cat => cat.key === categoryKey);
+
+      if (link.hasAttribute("data-menu-home")) {
+        if (window.location.pathname.endsWith("index.html") || window.location.pathname.endsWith("/")) {
+          event.preventDefault();
+          scrollToElement("shop-header");
+        }
+        document.querySelectorAll(".wix-browser-links a").forEach(item => item.classList.remove("active"));
+        link.classList.add("active");
+      } else if (category && isCategoryPage() && !category.target) {
+        event.preventDefault();
+        selectCategory(category);
+      }
+
+      closeMobileMenu();
+    });
+  });
 }
 
 function initCategoryPageState() {
@@ -753,14 +910,14 @@ function updateCategoryPageHeader(cat) {
   const subtitle = document.getElementById("category-page-subtitle");
   const badge = document.getElementById("category-page-badge");
 
-  if (title) title.textContent = cat.name;
+  if (title) title.textContent = getCategoryLabel(cat);
   if (subtitle) {
     subtitle.textContent = cat.key === "all"
-      ? "Browse all premium covers, accessories, protectors, phones, watches, and repair essentials in one place."
-      : `Browse ${cat.name.toLowerCase()} available at The World Mobile.`;
+      ? t("category_page_subtitle_all", "Browse all premium covers, accessories, protectors, phones, watches, and repair essentials in one place.")
+      : t("category_page_subtitle_category", `Browse ${getCategoryLabel(cat).toLowerCase()} available at The World Mobile.`, { category: getCategoryLabel(cat).toLowerCase() });
   }
-  if (badge) badge.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
-  document.title = `${cat.name} | The World Mobile`;
+  if (badge) badge.innerHTML = `<i class="ti ${cat.icon}"></i> ${getCategoryLabel(cat)}`;
+  document.title = `${getCategoryLabel(cat)} | The World Mobile`;
 }
 
 function updateProductPage() {
@@ -795,9 +952,9 @@ function updateProductPage() {
 
   document.title = `${prod.title} | The World Mobile`;
   if (title) title.textContent = prod.title;
-  if (categoryEl) categoryEl.innerHTML = `<i class="ti ${category.icon}"></i> ${category.name}`;
+  if (categoryEl) categoryEl.innerHTML = `<i class="ti ${category.icon}"></i> ${getCategoryLabel(category)}`;
   if (breadcrumbCategory) {
-    breadcrumbCategory.textContent = category.name;
+    breadcrumbCategory.textContent = getCategoryLabel(category);
     breadcrumbCategory.href = getCategoryUrl(category);
   }
   if (image) {
@@ -809,7 +966,7 @@ function updateProductPage() {
     oldPrice.textContent = prod.oldPrice ? `${CONFIG.currency}${prod.oldPrice.toFixed(2)}` : "";
     oldPrice.style.display = prod.oldPrice ? "inline" : "none";
   }
-  if (desc) desc.textContent = prod.description || "Premium product from The World Mobile.";
+  if (desc) desc.textContent = prod.description || t("product_detail_loading", "Premium product from The World Mobile.");
   if (options) {
     options.innerHTML = (prod.options || []).map(option => `<span>${option}</span>`).join("");
     options.style.display = prod.options?.length ? "flex" : "none";
@@ -831,29 +988,12 @@ function initNavbarScroll() {
     }
   });
 
-  // Mobile navigation drawer toggles
   const menuToggle = document.getElementById("menu-toggle-btn");
   const menuClose = document.getElementById("menu-close-btn");
   const mobileMenu = document.getElementById("mobile-drawer-menu");
   const backdrop = document.getElementById("drawer-backdrop");
-  const menuLinks = mobileMenu?.querySelector(".wix-browser-links");
 
-  if (menuLinks) {
-    menuLinks.innerHTML = `
-      <a href="index.html" class="active" data-menu-home="true"><i class="ti ti-home"></i> Home</a>
-      ${STORE_CATEGORIES.map(cat => `
-        <a href="${getCategoryUrl(cat)}" data-category="${cat.key}">
-          <i class="ti ${cat.icon}"></i> ${cat.name}
-        </a>
-      `).join("")}
-      <a href="about.html"><i class="ti ti-info-circle"></i> About Us</a>
-      <a href="contact.html"><i class="ti ti-phone"></i> Contact</a>
-      <a href="privacy-policy.html"><i class="ti ti-shield"></i> Privacy Policy</a>
-      <a href="terms.html"><i class="ti ti-file-text"></i> Terms</a>
-      <a href="delivery-info.html"><i class="ti ti-truck"></i> Delivery Info</a>
-    `;
-    syncCategoryControls(selectedCategory);
-  }
+  renderMobileMenuLinks();
 
   const closeMobileMenu = () => {
     if (mobileMenu) mobileMenu.classList.remove("open");
@@ -875,7 +1015,6 @@ function initNavbarScroll() {
       if (backdrop) backdrop.classList.add("show");
       document.body.classList.add("drawer-open");
       document.body.classList.add("menu-drawer-open");
-      // Accessibility: indicate expanded state and move focus into menu
       menuToggle.setAttribute('aria-expanded', 'true');
       const firstFocusable = mobileMenu.querySelector('button, a, [tabindex]:not([tabindex="-1"])');
       if (firstFocusable) {
@@ -890,31 +1029,6 @@ function initNavbarScroll() {
 
   if (backdrop) {
     backdrop.addEventListener("click", closeMobileMenu);
-  }
-
-  // Close menu drawer when clicking on any menu link (for smooth scrolling to sections)
-  if (mobileMenu) {
-    const navLinks = mobileMenu.querySelectorAll(".wix-browser-links a");
-    navLinks.forEach(link => {
-      link.addEventListener("click", (event) => {
-        const categoryKey = link.getAttribute("data-category");
-        const category = STORE_CATEGORIES.find(cat => cat.key === categoryKey);
-
-        if (link.hasAttribute("data-menu-home")) {
-          if (window.location.pathname.endsWith("index.html") || window.location.pathname.endsWith("/")) {
-            event.preventDefault();
-            scrollToElement("shop-header");
-          }
-          document.querySelectorAll(".wix-browser-links a").forEach(item => item.classList.remove("active"));
-          link.classList.add("active");
-        } else if (category && isCategoryPage() && !category.target) {
-          event.preventDefault();
-          selectCategory(category);
-        }
-
-        closeMobileMenu();
-      });
-    });
   }
 }
 
@@ -1029,8 +1143,8 @@ function filterAndRenderProducts() {
     grid.innerHTML = `
       <div class="cart-empty-message" style="grid-column: 1/-1; padding: 60px 0;">
         <i class="ti ti-search-off" style="font-size: 64px; color: var(--text-muted); display: block; margin-bottom: 16px;"></i>
-        <h3>No Products Found</h3>
-        <p>Try searching for something else or explore a different category.</p>
+        <h3>${t("no_products_found_title", "No Products Found")}</h3>
+        <p>${t("no_products_found_desc", "Try searching for something else or explore a different category.")}</p>
       </div>
     `;
     return;
@@ -1052,18 +1166,18 @@ function filterAndRenderProducts() {
         <a class="product-image-container" href="${getProductUrl(prod)}" aria-label="View ${prod.title}">
           <img src="${prod.image}" alt="${prod.title}" loading="lazy">
           <div class="product-actions-overlay">
-            <button class="overlay-btn" type="button" onclick="event.preventDefault(); window.location.href='${getProductUrl(prod)}';" title="View Details">
+            <button class="overlay-btn" type="button" onclick="event.preventDefault(); window.location.href='${getProductUrl(prod)}';" title="${t('product_view', 'View')}">
               <i class="ti ti-eye"></i>
-              <span>View</span>
+              <span>${t("product_view", "View")}</span>
             </button>
-            <button class="overlay-btn" type="button" onclick="event.preventDefault(); quickAddCart('${prod.id}')" title="Add to Cart">
+            <button class="overlay-btn" type="button" onclick="event.preventDefault(); quickAddCart('${prod.id}')" title="${t('product_add', 'Add')}">
               <i class="ti ti-shopping-cart"></i>
-              <span>Add</span>
+              <span>${t("product_add", "Add")}</span>
             </button>
           </div>
         </a>
         <div class="product-info">
-          <span class="product-category">${prod.category.replace(/-/g, " ")}</span>
+          <span class="product-category">${getCategoryLabel(getCategoryByKey(prod.category))}</span>
           <h3 class="product-title"><a href="${getProductUrl(prod)}">${prod.title}</a></h3>
           <div class="product-bottom">
             <div class="product-price-wrapper">
@@ -1366,16 +1480,16 @@ function initRepairEstimator() {
   const bookBtn = document.getElementById("book-repair-btn");
   
   if (!brandSelect) return;
-  
+
   // Populates brand selector
-  brandSelect.innerHTML = `<option value="">Select Phone Brand...</option>` +
+  brandSelect.innerHTML = `<option value="">${t("repair_brand_placeholder", "Select Phone Brand...")}</option>` +
     Object.keys(repairPrices).map(key => 
       `<option value="${key}">${repairPrices[key].name}</option>`
     ).join("");
     
   brandSelect.addEventListener("change", (e) => {
     const brand = e.target.value;
-    modelSelect.innerHTML = `<option value="">Select Phone Model...</option>`;
+    modelSelect.innerHTML = `<option value="">${t("repair_model_placeholder", "Select Phone Model...")}</option>`;
     issueSelect.selectedIndex = 0;
     estimateBox.classList.remove("active");
     
@@ -1435,12 +1549,12 @@ function initRepairEstimator() {
       const customerPhone = document.getElementById("booking-phone")?.value.trim();
 
       if (!brand || !model || !issue) {
-        showToast("Please select a brand, model, and issue to continue.", "error");
+        showToast(t("toast_select_issue", "Please select a brand, model, and issue to continue."), "error");
         return;
       }
 
       if (!customerName || !customerPhone) {
-        showToast("Please enter your name and WhatsApp number.", "error");
+        showToast(t("toast_enter_name_phone", "Please enter your name and WhatsApp number."), "error");
         return;
       }
 
@@ -1470,7 +1584,7 @@ function initRepairEstimator() {
       saveCart();
       updateCartUI();
       openCartDrawer();
-      showToast(`Repair booking for ${modelName} added to cart!`, "success");
+      showToast(t("toast_repair_added_model", "Repair booking for {model} added to cart!", { model: modelName }), "success");
 
       // Reset form
       repairForm.reset();
@@ -1647,7 +1761,7 @@ window.quickAddCart = function(productId) {
   }
   
   openCartDrawer();
-  showToast(`${prod.title} added to cart!`, "success");
+  showToast(t("toast_product_added", "{product} added to cart!", { product: prod.title }), "success");
 };
 
 function saveCart() {
@@ -1696,8 +1810,8 @@ function updateCartUI() {
     cartItemsContainer.innerHTML = `
       <div class="cart-empty-message">
         <i class="ti ti-shopping-cart-x"></i>
-        <p>Your cart is empty</p>
-        <button class="btn btn-secondary" onclick="closeCartDrawer()" style="margin-top:16px; width: 100%;">Continue Shopping</button>
+        <p>${t("cart_empty", "Your cart is empty")}</p>
+        <button class="btn btn-secondary" onclick="closeCartDrawer()" style="margin-top:16px; width: 100%;">${t("cart_continue", "Continue Shopping")}</button>
       </div>
     `;
     if (formSection) formSection.classList.remove("active");
@@ -1712,11 +1826,11 @@ function updateCartUI() {
   cartItemsContainer.innerHTML = cart.map(item => {
     let metaText = "";
     if (item.options?.isCustom) {
-      metaText = `Model: ${item.options.model} ${item.options.text ? `| Text: "${item.options.text}"` : ''}`;
+      metaText = `${t("order_phone_model", "Phone Model")}: ${item.options.model} ${item.options.text ? `| ${t("order_text", "Text")}: "${item.options.text}"` : ''}`;
     } else if (item.options?.isRepair) {
       metaText = `${item.options.issue} (${item.options.model})`;
     } else if (item.options?.selectedModel) {
-      metaText = `Option: ${item.options.selectedModel}`;
+      metaText = `${t("order_selected_model", "Selected Model")}: ${item.options.selectedModel}`;
     }
 
     return `
@@ -1729,12 +1843,12 @@ function updateCartUI() {
           ${metaText ? `<span class="cart-item-meta">${metaText}</span>` : ''}
           <div class="cart-item-bottom">
             <div class="cart-qty">
-              <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)" aria-label="Decrease quantity">-</button>
+              <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)" aria-label="${t('cart_decrease_qty', 'Decrease quantity')}">-</button>
               <span class="qty-val">${item.quantity}</span>
-              <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)" aria-label="Increase quantity">+</button>
+              <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)" aria-label="${t('cart_increase_qty', 'Increase quantity')}">+</button>
             </div>
             <span class="cart-item-price">${CONFIG.currency}${(item.price * item.quantity).toFixed(2)}</span>
-            <button class="cart-item-remove" onclick="removeCartItem('${item.id}')" aria-label="Remove item">
+            <button class="cart-item-remove" onclick="removeCartItem('${item.id}')" aria-label="${t('cart_remove_item', 'Remove item')}">
               <i class="ti ti-trash"></i>
             </button>
           </div>
@@ -1788,9 +1902,9 @@ function updateSummary(subtotal, shipping, discount, total) {
   if (subTotalEl) subTotalEl.innerText = `${CONFIG.currency}${subtotal.toFixed(2)}`;
   if (shippingEl) {
     if (deliveryMethod === "pickup") {
-      shippingEl.innerText = "Store Pickup (Free)";
+      shippingEl.innerText = t("cart_pickup", "Store Pickup (Free)");
     } else {
-      shippingEl.innerText = shipping === 0 ? "FREE" : `${CONFIG.currency}${shipping.toFixed(2)}`;
+      shippingEl.innerText = shipping === 0 ? t("cart_free", "FREE") : `${CONFIG.currency}${shipping.toFixed(2)}`;
     }
   }
   if (discountEl) {
@@ -1830,43 +1944,43 @@ function sendWhatsAppOrder(name, phone, address) {
   if (total < 0) total = 0;
 
   // Build the message
-  let msg = `*NEW ORDER - THE WORLD MOBILE*\n`;
+  let msg = `*${t("order_new_title", "NEW ORDER - THE WORLD MOBILE")}*\n`;
   msg += `-------------------------------------------\n`;
-  msg += `*Customer Name:* ${name}\n`;
-  msg += `*Phone:* ${phone}\n`;
-  msg += `*Delivery Method:* ${deliveryMethod === "delivery" ? "Home Delivery" : "Store Pickup"}\n`;
+  msg += `*${t("order_customer_name", "Customer Name")}:* ${name}\n`;
+  msg += `*${t("order_phone", "Phone")}:* ${phone}\n`;
+  msg += `*${t("order_delivery_method", "Delivery Method")}:* ${deliveryMethod === "delivery" ? t("cart_delivery_short", "Home Delivery") : t("cart_pickup", "Store Pickup (Free)")}\n`;
   
   if (deliveryMethod === "delivery") {
-    msg += `*Shipping Address:* ${address}\n`;
+    msg += `*${t("order_shipping_address", "Shipping Address")}:* ${address}\n`;
   }
   msg += `-------------------------------------------\n\n`;
-  msg += `*Ordered Items:*\n`;
+  msg += `*${t("order_items", "Ordered Items")}*\n`;
   
   cart.forEach((item, index) => {
     msg += `${index + 1}. *${item.title}* x${item.quantity} - ${CONFIG.currency}${(item.price * item.quantity).toFixed(2)}\n`;
     if (item.options?.isCustom) {
-      msg += `   - Phone Model: ${item.options.model}\n`;
-      if (item.options.text) msg += `   - Text Printed: "${item.options.text}"\n`;
-      msg += `   - Case Color: ${item.options.bgColor}\n`;
+      msg += `   - ${t("order_phone_model", "Phone Model")}: ${item.options.model}\n`;
+      if (item.options.text) msg += `   - ${t("order_text", "Text")}: "${item.options.text}"\n`;
+      msg += `   - ${t("order_case_color", "Case Color")}: ${item.options.bgColor}\n`;
     } else if (item.options?.isRepair) {
-      msg += `   - Repair: ${item.options.issue}\n`;
-      msg += `   - Device: ${item.options.model}\n`;
+      msg += `   - ${t("order_repair", "Repair")}: ${item.options.issue}\n`;
+      msg += `   - ${t("order_device", "Device")}: ${item.options.model}\n`;
     } else if (item.options?.selectedModel) {
-      msg += `   - Selected Model: ${item.options.selectedModel}\n`;
+      msg += `   - ${t("order_selected_model", "Selected Model")}: ${item.options.selectedModel}\n`;
     }
     msg += `\n`;
   });
   
   msg += `-------------------------------------------\n`;
-  msg += `Subtotal: ${CONFIG.currency}${subtotal.toFixed(2)}\n`;
-  msg += `Shipping Fee: ${deliveryMethod === "delivery" ? (shipping === 0 ? "FREE" : `${CONFIG.currency}${shipping.toFixed(2)}`) : "Free (Store Pickup)"}\n`;
+  msg += `${t("cart_subtotal", "Subtotal")}: ${CONFIG.currency}${subtotal.toFixed(2)}\n`;
+  msg += `${t("order_shipping_fee", "Shipping Fee")}: ${deliveryMethod === "delivery" ? (shipping === 0 ? t("cart_free", "FREE") : `${CONFIG.currency}${shipping.toFixed(2)}`) : t("cart_pickup", "Store Pickup (Free)")}\n`;
   
   if (discount > 0) {
-    msg += `Coupon Discount (${currentCoupon.code}): -${CONFIG.currency}${discount.toFixed(2)}\n`;
+    msg += `${t("cart_coupon_discount", "Coupon Discount")} (${currentCoupon.code}): -${CONFIG.currency}${discount.toFixed(2)}\n`;
   }
   
-  msg += `*TOTAL AMOUNT: ${CONFIG.currency}${total.toFixed(2)}*\n\n`;
-  msg += `Please confirm my order and send payment instructions. Thank you!`;
+  msg += `*${t("cart_total", "Estimated Total").toUpperCase()}: ${CONFIG.currency}${total.toFixed(2)}*\n\n`;
+  msg += `${t("order_confirm", "Please confirm my order and send payment instructions. Thank you!")}`;
 
   // Encode message for WhatsApp link
   const encodedMsg = encodeURIComponent(msg);
@@ -1941,7 +2055,7 @@ window.openProductDetail = function(productId) {
     oldPrice.style.display = "none";
   }
   
-  desc.innerText = prod.description || "Premium accessory designed with durable shock protection and ergonomic grip features.";
+  desc.innerText = prod.description || t("product_detail_loading", "Loading product details...");
   
   // Populate product model/color options if exist
   if (prod.options && prod.options.length > 0) {
@@ -1960,7 +2074,7 @@ window.openProductDetail = function(productId) {
   const footer = document.getElementById("modal-footer-action");
   footer.innerHTML = `
     <button class="btn btn-primary" onclick="addModalItemToCart()" style="flex:1;">
-      <i class="ti ti-shopping-cart"></i> Add to Shopping Cart
+      <i class="ti ti-shopping-cart"></i> ${t("modal_add_to_cart", "Add to Shopping Cart")}
     </button>
   `;
   
@@ -2005,7 +2119,7 @@ window.addModalItemToCart = function() {
   activeDetailProductId = null;
   
   openCartDrawer();
-  showToast(`${prod.title} added to cart!`, "success");
+  showToast(t("toast_product_added", "{product} added to cart!", { product: prod.title }), "success");
 };
 
 // ---------------------------------------------------------
