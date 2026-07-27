@@ -1,8 +1,32 @@
-﻿const cfg = window.TWM_SUPABASE_CONFIG || {};
+const cfg = window.TWM_SUPABASE_CONFIG || {};
 const hasConfig = Boolean(cfg.url && cfg.anonKey && window.supabase?.createClient);
 const client = hasConfig ? window.supabase.createClient(cfg.url, cfg.anonKey) : null;
 const tableName = cfg.productsTable || "products";
 const bucketName = cfg.storageBucket || "product-images";
+
+const CATEGORY_LABELS = {
+  "photo-cover": "Photo Covers",
+  "iphone-covers": "iPhone Covers",
+  "samsung-covers": "Samsung Covers",
+  "redmi-covers": "Redmi Covers",
+  "oppo-covers": "Oppo Covers",
+  "google-pixel": "Google Pixel",
+  "airpod-covers": "AirPod Covers",
+  "screen-protectors": "Screen Protectors",
+  "camera-protectors": "Camera Protectors",
+  "smart-watches": "Smart Watches",
+  "watch-bands": "Watch Bands",
+  "sim-cards": "Sim Cards",
+  "mobile-accessories": "Mobile Accessories",
+  "cordon": "Cordon",
+  "travel-adapter": "Travel Adapter",
+  "memory-cards": "Memory Cards",
+  "headphones": "Headphones",
+  "speaker": "Speaker",
+  "offers": "Offers",
+  "phones": "Phones",
+  "mobile-repair": "Mobile Repair"
+};
 
 const loginPanel = document.getElementById("login-panel");
 const passwordPanel = document.getElementById("password-panel");
@@ -16,11 +40,20 @@ const productList = document.getElementById("admin-product-list");
 const imageInput = document.getElementById("product-image");
 const imagePreview = document.getElementById("image-preview");
 const toast = document.getElementById("admin-toast");
+const dashboardStats = document.getElementById("dashboard-stats");
+const searchInput = document.getElementById("product-search");
+const categoryFilter = document.getElementById("category-filter");
+
+let catalogCache = [];
+let activeSearch = "";
+let activeCategory = "all";
 
 function showToast(message) {
+  if (!toast) return;
   toast.textContent = message;
   toast.hidden = false;
-  setTimeout(() => {
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => {
     toast.hidden = true;
   }, 3200);
 }
@@ -32,9 +65,11 @@ function getUrlParams() {
 }
 
 function showAuthNotice(title, message) {
-  document.getElementById("auth-notice-title").textContent = title;
-  document.getElementById("auth-notice-message").textContent = message;
-  authNotice.hidden = false;
+  const titleEl = document.getElementById("auth-notice-title");
+  const messageEl = document.getElementById("auth-notice-message");
+  if (titleEl) titleEl.textContent = title;
+  if (messageEl) messageEl.textContent = message;
+  if (authNotice) authNotice.hidden = false;
 }
 
 function clearAuthUrl() {
@@ -51,7 +86,7 @@ function getAuthErrorMessage() {
 
   if (!error && !code && !description) return "";
   if (code === "otp_expired") {
-    return "Invitation link expired or already used. Create a new invite after fixing Supabase redirect URL settings.";
+    return "Invitation link expired or already used. Create a new invite from Supabase Auth.";
   }
   return description || error || "Supabase could not complete this login link.";
 }
@@ -71,27 +106,33 @@ function slugify(value) {
     .slice(0, 48);
 }
 
-function getOptionsArray() {
-  return document
-    .getElementById("product-options")
-    .value
+function parseOptions(value) {
+  return value
     .split(",")
     .map(item => item.trim())
     .filter(Boolean);
 }
 
+function categoryLabel(key) {
+  return CATEGORY_LABELS[key] || key || "Uncategorized";
+}
+
 function setPanelState(isLoggedIn) {
-  loginPanel.hidden = isLoggedIn;
-  passwordPanel.hidden = true;
-  adminPanel.hidden = !isLoggedIn;
-  document.getElementById("logout-btn").hidden = !isLoggedIn;
+  if (loginPanel) loginPanel.hidden = isLoggedIn;
+  if (passwordPanel) passwordPanel.hidden = true;
+  if (adminPanel) adminPanel.hidden = !isLoggedIn;
+  if (dashboardStats) dashboardStats.hidden = !isLoggedIn;
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) logoutBtn.hidden = !isLoggedIn;
 }
 
 function setPasswordSetupState() {
-  loginPanel.hidden = true;
-  passwordPanel.hidden = false;
-  adminPanel.hidden = true;
-  document.getElementById("logout-btn").hidden = false;
+  if (loginPanel) loginPanel.hidden = true;
+  if (passwordPanel) passwordPanel.hidden = false;
+  if (adminPanel) adminPanel.hidden = true;
+  if (dashboardStats) dashboardStats.hidden = true;
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) logoutBtn.hidden = false;
 }
 
 function resetForm() {
@@ -103,11 +144,12 @@ function resetForm() {
   document.getElementById("form-title").textContent = "Add product";
   imagePreview.hidden = true;
   imagePreview.removeAttribute("src");
+  imageInput.value = "";
 }
 
 function fillForm(product) {
   document.getElementById("form-title").textContent = "Edit product";
-  document.getElementById("product-id").value = product.id;
+  document.getElementById("product-id").value = product.id || "";
   document.getElementById("existing-image-url").value = product.image_url || "";
   document.getElementById("product-title").value = product.title || "";
   document.getElementById("product-category").value = product.category || "photo-cover";
@@ -126,7 +168,9 @@ function fillForm(product) {
 }
 
 async function uploadImage(file) {
-  if (!file) return document.getElementById("existing-image-url").value;
+  const existing = document.getElementById("existing-image-url").value;
+  if (!file) return existing;
+  if (!client) return existing;
 
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
@@ -141,53 +185,122 @@ async function uploadImage(file) {
   return data.publicUrl;
 }
 
-async function loadProducts() {
-  if (!client) return;
+function applyFilters() {
+  const query = activeSearch.toLowerCase();
+  return catalogCache.filter(product => {
+    const matchesCategory = activeCategory === "all" || product.category === activeCategory;
+    const haystack = [
+      product.title,
+      product.description,
+      product.category,
+      product.badge,
+      categoryLabel(product.category)
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return matchesCategory && haystack.includes(query);
+  });
+}
 
-  productList.innerHTML = `<p class="muted">Loading products...</p>`;
-  const { data, error } = await client
-    .from(tableName)
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
+function updateStats(items = catalogCache) {
+  const total = items.length;
+  const visible = items.filter(item => item.is_active !== false).length;
+  const hidden = total - visible;
+  const totalEl = document.getElementById("stat-total");
+  const visibleEl = document.getElementById("stat-visible");
+  const hiddenEl = document.getElementById("stat-hidden");
+  if (totalEl) totalEl.textContent = String(total);
+  if (visibleEl) visibleEl.textContent = String(visible);
+  if (hiddenEl) hiddenEl.textContent = String(hidden);
+}
 
-  if (error) {
-    productList.innerHTML = `<p class="muted">${error.message}</p>`;
+function renderProductList(items) {
+  if (!productList) return;
+
+  updateStats(items);
+
+  if (!items.length) {
+    productList.innerHTML = `
+      <article class="admin-product">
+        <div>
+          <h3>No products found</h3>
+          <p>Try a different search or category filter.</p>
+        </div>
+      </article>
+    `;
     return;
   }
 
-  if (!data.length) {
-    productList.innerHTML = `<p class="muted">No products yet. Add the first one from the form.</p>`;
-    return;
-  }
+  productList.innerHTML = items.map(product => {
+    const badgeHTML = product.badge ? `<span class="meta-pill">${product.badge}</span>` : "";
+    const statusHTML = product.is_active === false
+      ? `<span class="meta-pill muted"><i class="ti ti-eye-off"></i> Hidden</span>`
+      : `<span class="meta-pill"><i class="ti ti-eye"></i> Visible</span>`;
+    const oldPriceHTML = product.old_price ? `<span class="meta-pill muted"><i class="ti ti-tag"></i> Old €${Number(product.old_price).toFixed(2)}</span>` : "";
 
-  productList.innerHTML = data.map(product => `
-    <article class="admin-product">
-      <img src="${product.image_url || "assets/hero-bg.png"}" alt="${product.title}">
-      <div>
-        <h3>${product.title}</h3>
-        <span>${product.category} - €${Number(product.price || 0).toFixed(2)} - ${product.is_active ? "Visible" : "Hidden"}</span>
-      </div>
-      <div class="row-actions">
-        <button type="button" data-action="edit" data-id="${product.id}" title="Edit"><i class="ti ti-edit"></i></button>
-        <button class="danger" type="button" data-action="delete" data-id="${product.id}" title="Delete"><i class="ti ti-trash"></i></button>
-      </div>
-    </article>
-  `).join("");
+    return `
+      <article class="admin-product">
+        <img src="${product.image_url || "assets/hero-bg.png"}" alt="${product.title || "Product"}" />
+        <div>
+          <h3>${product.title || "Untitled product"}</h3>
+          <p>${categoryLabel(product.category)} · €${Number(product.price || 0).toFixed(2)}</p>
+          <div class="product-meta">
+            ${statusHTML}
+            ${badgeHTML}
+            ${oldPriceHTML}
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="button" data-action="edit" data-id="${product.id}" title="Edit"><i class="ti ti-edit"></i></button>
+          <button type="button" data-action="duplicate" data-id="${product.id}" title="Duplicate"><i class="ti ti-copy"></i></button>
+          <button type="button" data-action="toggle" data-id="${product.id}" title="Toggle visibility"><i class="ti ti-eye-cog"></i></button>
+          <button class="danger" type="button" data-action="delete" data-id="${product.id}" title="Delete"><i class="ti ti-trash"></i></button>
+        </div>
+      </article>
+    `;
+  }).join("");
 
   productList.querySelectorAll("button[data-action]").forEach(button => {
     button.addEventListener("click", async () => {
       const id = button.dataset.id;
       const action = button.dataset.action;
-      const product = data.find(item => String(item.id) === String(id));
+      const product = catalogCache.find(item => String(item.id) === String(id));
+      if (!product) return;
 
-      if (action === "edit" && product) {
+      if (action === "edit") {
         fillForm(product);
         window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      if (action === "duplicate") {
+        fillForm({
+          ...product,
+          id: "",
+          title: `${product.title} copy`
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        showToast("Product copied into the editor.");
+        return;
+      }
+
+      if (action === "toggle") {
+        const { error } = await client.from(tableName).update({
+          is_active: !product.is_active,
+          updated_at: new Date().toISOString()
+        }).eq("id", id);
+        if (error) {
+          showToast(error.message);
+          return;
+        }
+        showToast(product.is_active ? "Product hidden." : "Product shown.");
+        await loadProducts();
+        return;
       }
 
       if (action === "delete") {
-        const confirmed = confirm("Delete this product?");
+        const confirmed = confirm(`Delete "${product.title}"?`);
         if (!confirmed) return;
         const { error } = await client.from(tableName).delete().eq("id", id);
         if (error) {
@@ -201,14 +314,49 @@ async function loadProducts() {
   });
 }
 
+async function loadProducts() {
+  if (!client) {
+    productList.innerHTML = `<p class="muted">Connect Supabase to see products.</p>`;
+    return;
+  }
+
+  productList.innerHTML = `<p class="muted">Loading products...</p>`;
+  const { data, error } = await client
+    .from(tableName)
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    productList.innerHTML = `<p class="muted">${error.message}</p>`;
+    return;
+  }
+
+  catalogCache = Array.isArray(data) ? data : [];
+  renderProductList(applyFilters());
+}
+
 async function saveProduct(event) {
   event.preventDefault();
 
+  if (!client) {
+    showToast("Connect Supabase first.");
+    return;
+  }
+
   try {
-    const idInput = document.getElementById("product-id");
     const title = document.getElementById("product-title").value.trim();
-    const id = idInput.value || `${slugify(title)}-${Date.now()}`;
-    const imageUrl = await uploadImage(imageInput.files[0]);
+    if (!title) {
+      showToast("Add a product title first.");
+      return;
+    }
+
+    const idInput = document.getElementById("product-id");
+    const existingId = idInput.value.trim();
+    const id = existingId || `${slugify(title)}-${Date.now()}`;
+    const file = imageInput.files[0];
+    const existingImage = document.getElementById("existing-image-url").value;
+    const imageUrl = await uploadImage(file);
 
     const payload = {
       id,
@@ -217,14 +365,19 @@ async function saveProduct(event) {
       price: Number(document.getElementById("product-price").value || 0),
       old_price: document.getElementById("product-old-price").value ? Number(document.getElementById("product-old-price").value) : null,
       description: document.getElementById("product-description").value.trim(),
-      image_url: imageUrl,
+      image_url: imageUrl || existingImage,
       badge: document.getElementById("product-badge").value || null,
-      options: getOptionsArray(),
+      options: parseOptions(document.getElementById("product-options").value),
       is_custom: false,
       is_active: document.getElementById("product-active").checked,
       sort_order: Number(document.getElementById("product-sort").value || 100),
       updated_at: new Date().toISOString()
     };
+
+    if (!payload.image_url) {
+      showToast("Please upload a product image.");
+      return;
+    }
 
     const { error } = await client.from(tableName).upsert(payload);
     if (error) throw error;
@@ -237,9 +390,25 @@ async function saveProduct(event) {
   }
 }
 
+function bindFilters() {
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      activeSearch = searchInput.value || "";
+      renderProductList(applyFilters());
+    });
+  }
+
+  if (categoryFilter) {
+    categoryFilter.addEventListener("change", () => {
+      activeCategory = categoryFilter.value || "all";
+      renderProductList(applyFilters());
+    });
+  }
+}
+
 async function initAdmin() {
   if (!hasConfig) {
-    setupWarning.hidden = false;
+    if (setupWarning) setupWarning.hidden = false;
     setPanelState(false);
     return;
   }
@@ -250,6 +419,8 @@ async function initAdmin() {
     clearAuthUrl();
   }
 
+  bindFilters();
+
   const { data } = await client.auth.getSession();
   const hasSession = Boolean(data.session);
 
@@ -259,6 +430,14 @@ async function initAdmin() {
     setPanelState(hasSession);
     if (hasSession) await loadProducts();
   }
+
+  client.auth.onAuthStateChange(async (_event, session) => {
+    const loggedIn = Boolean(session);
+    setPanelState(loggedIn);
+    if (loggedIn) {
+      await loadProducts();
+    }
+  });
 
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -305,4 +484,3 @@ async function initAdmin() {
 }
 
 document.addEventListener("DOMContentLoaded", initAdmin);
-
