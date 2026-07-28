@@ -217,7 +217,7 @@ function loadImageFromFile(file) {
   });
 }
 
-async function fileToOptimizedDataUrl(file, maxSize = 1024, quality = 0.78) {
+async function fileToOptimizedDataUrl(file, maxSize = 768, quality = 0.7) {
   if (!file) return "";
   const image = await loadImageFromFile(file);
   const largestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
@@ -240,6 +240,27 @@ async function fileToOptimizedDataUrl(file, maxSize = 1024, quality = 0.78) {
     output = canvas.toDataURL("image/jpeg", quality);
   }
   return output;
+}
+
+async function getLocalImageUrl(file) {
+  const attempts = [
+    { maxSize: 1024, quality: 0.78 },
+    { maxSize: 768, quality: 0.7 },
+    { maxSize: 640, quality: 0.62 },
+    { maxSize: 512, quality: 0.56 },
+    { maxSize: 384, quality: 0.5 }
+  ];
+
+  for (const attempt of attempts) {
+    try {
+      const optimized = await fileToOptimizedDataUrl(file, attempt.maxSize, attempt.quality);
+      if (optimized) return optimized;
+    } catch (error) {
+      console.warn("Image optimization attempt failed.", attempt, error);
+    }
+  }
+
+  return fileToDataUrl(file);
 }
 
 async function seedLocalCatalogFromStorefront() {
@@ -315,7 +336,7 @@ async function uploadImage(file) {
   if (!file) return existing;
   if (!client) {
     try {
-      return await fileToOptimizedDataUrl(file);
+      return await getLocalImageUrl(file);
     } catch (error) {
       console.warn("Optimized local image save failed, falling back to original image data.", error);
       return fileToDataUrl(file);
@@ -527,7 +548,7 @@ async function saveProduct(event) {
     const id = existingId || `${slugify(title)}-${Date.now()}`;
     const file = imageInput.files[0];
     const existingImage = document.getElementById("existing-image-url").value;
-    const imageUrl = await uploadImage(file);
+    const imageUrl = client ? await uploadImage(file) : (file ? await getLocalImageUrl(file) : existingImage);
 
     const payload = {
       id,
@@ -558,7 +579,42 @@ async function saveProduct(event) {
       const localProducts = readLocalProducts();
       const nextProducts = localProducts.filter(item => item.id !== id);
       nextProducts.unshift(payload);
-      saveLocalProducts(nextProducts);
+
+      try {
+        saveLocalProducts(nextProducts);
+      } catch (storageError) {
+        if (file) {
+          const fallbackLevels = [
+            { maxSize: 320, quality: 0.46 },
+            { maxSize: 240, quality: 0.4 }
+          ];
+
+          let saved = false;
+          for (const level of fallbackLevels) {
+            try {
+              const smallerImageUrl = await fileToOptimizedDataUrl(file, level.maxSize, level.quality);
+              const smallerPayload = { ...payload, image_url: smallerImageUrl };
+              const smallerNextProducts = localProducts.filter(item => item.id !== id);
+              smallerNextProducts.unshift(smallerPayload);
+              saveLocalProducts(smallerNextProducts);
+              nextProducts.length = 0;
+              nextProducts.push(...smallerNextProducts);
+              payload.image_url = smallerImageUrl;
+              saved = true;
+              break;
+            } catch (retryError) {
+              console.warn("Storage retry with a smaller image failed.", retryError);
+            }
+          }
+
+          if (!saved) {
+            throw storageError;
+          }
+        } else {
+          throw storageError;
+        }
+      }
+
       catalogCache = nextProducts;
       activeSearch = "";
       activeCategory = "all";
