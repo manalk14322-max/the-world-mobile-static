@@ -217,7 +217,7 @@ function loadImageFromFile(file) {
   });
 }
 
-async function fileToOptimizedDataUrl(file, maxSize = 1400, quality = 0.82) {
+async function fileToOptimizedDataUrl(file, maxSize = 1024, quality = 0.78) {
   if (!file) return "";
   const image = await loadImageFromFile(file);
   const largestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
@@ -230,7 +230,16 @@ async function fileToOptimizedDataUrl(file, maxSize = 1400, quality = 0.82) {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Image preview could not be created.");
   ctx.drawImage(image, 0, 0, width, height);
-  return canvas.toDataURL("image/jpeg", quality);
+  let output = "";
+  try {
+    output = canvas.toDataURL("image/webp", quality);
+  } catch (error) {
+    output = "";
+  }
+  if (!output || output === "data:,") {
+    output = canvas.toDataURL("image/jpeg", quality);
+  }
+  return output;
 }
 
 async function seedLocalCatalogFromStorefront() {
@@ -304,7 +313,14 @@ function fillForm(product) {
 async function uploadImage(file) {
   const existing = document.getElementById("existing-image-url").value;
   if (!file) return existing;
-  if (!client) return fileToOptimizedDataUrl(file);
+  if (!client) {
+    try {
+      return await fileToOptimizedDataUrl(file);
+    } catch (error) {
+      console.warn("Optimized local image save failed, falling back to original image data.", error);
+      return fileToDataUrl(file);
+    }
+  }
 
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
@@ -528,6 +544,10 @@ async function saveProduct(event) {
       sort_order: Number(document.getElementById("product-sort").value || 100),
       updated_at: new Date().toISOString()
     };
+
+    if (!payload.image_url) {
+      payload.image_url = imagePreview?.src || "";
+    }
 
     if (!payload.image_url) {
       showToast("Please upload a product image.");
