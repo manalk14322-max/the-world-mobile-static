@@ -308,6 +308,14 @@ a {
   padding: 24px;
 }
 
+.editor-panel {
+  scroll-margin-top: 110px;
+}
+
+.flash-editor {
+  animation: editorPulse 0.9s ease;
+}
+
 .panel-head {
   margin-bottom: 22px;
   display: flex;
@@ -470,33 +478,49 @@ textarea {
 
 .admin-product {
   display: grid;
-  grid-template-columns: 88px 1fr auto;
-  gap: 14px;
+  grid-template-columns: 116px minmax(0, 1fr) auto;
+  gap: 16px;
   align-items: center;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: #ffffff;
 }
 
-.admin-product img {
-  width: 88px;
-  height: 98px;
+.admin-product-image-wrap {
+  width: 116px;
+  height: 128px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fafc, #eef4ff);
+  border: 1px solid rgba(10, 31, 66, 0.05);
+  overflow: hidden;
+}
+
+.admin-product-image-wrap img {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
   object-fit: contain;
+  display: block;
   border-radius: 12px;
-  background: #f8fafc;
+  background: transparent;
+}
+
+.admin-product-copy {
+  min-width: 0;
 }
 
 .admin-product h3 {
-  margin: 0 0 4px;
-  font-size: 15px;
+  margin: 0 0 6px;
+  font-size: 16px;
+  line-height: 1.3;
 }
 
 .admin-product p {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 .product-meta {
@@ -528,11 +552,12 @@ textarea {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-self: center;
 }
 
 .row-actions button {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: #f8fafc;
@@ -552,6 +577,26 @@ textarea {
   color: #dc2626;
   background: #fef2f2;
   border-color: rgba(220, 38, 38, 0.18);
+}
+
+.empty-state {
+  justify-items: start;
+  padding: 18px;
+}
+
+@keyframes editorPulse {
+  0% {
+    box-shadow: var(--shadow);
+    transform: translateY(0);
+  }
+  35% {
+    box-shadow: 0 0 0 4px rgba(0, 78, 189, 0.08), 0 18px 45px rgba(10, 31, 66, 0.08);
+    transform: translateY(-1px);
+  }
+  100% {
+    box-shadow: var(--shadow);
+    transform: translateY(0);
+  }
 }
 
 .muted {
@@ -617,8 +662,13 @@ textarea {
     justify-content: flex-start;
   }
 
-  .admin-product img {
+  .admin-product-image-wrap {
     width: 100%;
     height: 220px;
+  }
+
+  .row-actions button {
+    width: 44px;
+    height: 44px;
   }
 }

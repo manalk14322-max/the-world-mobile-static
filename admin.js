@@ -119,6 +119,30 @@ function categoryLabel(key) {
   return CATEGORY_LABELS[key] || key || "Uncategorized";
 }
 
+function formatPrice(value) {
+  const amount = Number(value || 0);
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+function focusEditor() {
+  const titleField = document.getElementById("product-title");
+  const editorSection = document.querySelector(".editor-panel");
+  if (editorSection) {
+    editorSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  if (titleField) {
+    window.setTimeout(() => titleField.focus({ preventScroll: true }), 240);
+  }
+  if (productForm) {
+    productForm.classList.add("flash-editor");
+    window.setTimeout(() => productForm.classList.remove("flash-editor"), 900);
+  }
+}
+
 function normalizeLocalProduct(row) {
   return {
     id: String(row.id || ""),
@@ -295,7 +319,7 @@ function renderProductList(items) {
 
   if (!items.length) {
     productList.innerHTML = `
-      <article class="admin-product">
+      <article class="admin-product empty-state">
         <div>
           <h3>No products found</h3>
           <p>Try a different search or category filter.</p>
@@ -310,25 +334,30 @@ function renderProductList(items) {
     const statusHTML = product.is_active === false
       ? `<span class="meta-pill muted"><i class="ti ti-eye-off"></i> Hidden</span>`
       : `<span class="meta-pill"><i class="ti ti-eye"></i> Visible</span>`;
-    const oldPriceHTML = product.old_price ? `<span class="meta-pill muted"><i class="ti ti-tag"></i> Old €${Number(product.old_price).toFixed(2)}</span>` : "";
+    const oldPriceHTML = product.old_price ? `<span class="meta-pill muted"><i class="ti ti-tag"></i> Old ${formatPrice(product.old_price)}</span>` : "";
+    const optionCount = Array.isArray(product.options) ? product.options.length : 0;
+    const optionHTML = optionCount ? `<span class="meta-pill muted"><i class="ti ti-list-details"></i> ${optionCount} options</span>` : "";
 
     return `
       <article class="admin-product">
-        <img src="${product.image_url || "assets/hero-bg.png"}" alt="${product.title || "Product"}" />
-        <div>
+        <div class="admin-product-image-wrap">
+          <img src="${product.image_url || "assets/hero-bg.png"}" alt="${product.title || "Product"}" loading="lazy" />
+        </div>
+        <div class="admin-product-copy">
           <h3>${product.title || "Untitled product"}</h3>
-          <p>${categoryLabel(product.category)} · €${Number(product.price || 0).toFixed(2)}</p>
+          <p>${categoryLabel(product.category)} - ${formatPrice(product.price)}</p>
           <div class="product-meta">
             ${statusHTML}
             ${badgeHTML}
             ${oldPriceHTML}
+            ${optionHTML}
           </div>
         </div>
-        <div class="row-actions">
-          <button type="button" data-action="edit" data-id="${product.id}" title="Edit"><i class="ti ti-edit"></i></button>
-          <button type="button" data-action="duplicate" data-id="${product.id}" title="Duplicate"><i class="ti ti-copy"></i></button>
-          <button type="button" data-action="toggle" data-id="${product.id}" title="Toggle visibility"><i class="ti ti-eye-cog"></i></button>
-          <button class="danger" type="button" data-action="delete" data-id="${product.id}" title="Delete"><i class="ti ti-trash"></i></button>
+        <div class="row-actions" aria-label="Product actions">
+          <button type="button" data-action="edit" data-id="${product.id}" title="Edit product" aria-label="Edit product"><i class="ti ti-edit"></i></button>
+          <button type="button" data-action="duplicate" data-id="${product.id}" title="Duplicate product" aria-label="Duplicate product"><i class="ti ti-copy"></i></button>
+          <button type="button" data-action="toggle" data-id="${product.id}" title="Toggle visibility" aria-label="Toggle visibility"><i class="ti ti-eye-cog"></i></button>
+          <button class="danger" type="button" data-action="delete" data-id="${product.id}" title="Delete product" aria-label="Delete product"><i class="ti ti-trash"></i></button>
         </div>
       </article>
     `;
@@ -343,7 +372,7 @@ function renderProductList(items) {
 
       if (action === "edit") {
         fillForm(product);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        focusEditor();
         return;
       }
 
@@ -353,7 +382,7 @@ function renderProductList(items) {
           id: "",
           title: `${product.title} copy`
         });
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        focusEditor();
         showToast("Product copied into the editor.");
         return;
       }
@@ -600,3 +629,6 @@ async function initAdmin() {
 }
 
 document.addEventListener("DOMContentLoaded", initAdmin);
+
+
+
