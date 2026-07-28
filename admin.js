@@ -174,7 +174,14 @@ function readLocalProducts() {
 }
 
 function saveLocalProducts(products) {
-  localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
+  try {
+    localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
+  } catch (error) {
+    if (error && (error.name === "QuotaExceededError" || error.code === 22)) {
+      throw new Error("Storage is full. Please use a smaller image or delete a few old products.");
+    }
+    throw error;
+  }
 }
 
 function dedupeLocalProducts(products) {
@@ -194,6 +201,36 @@ function fileToDataUrl(file) {
     reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
     reader.readAsDataURL(file);
   });
+}
+
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Could not process the selected image."));
+      img.src = String(reader.result || "");
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function fileToOptimizedDataUrl(file, maxSize = 1400, quality = 0.82) {
+  if (!file) return "";
+  const image = await loadImageFromFile(file);
+  const largestSide = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height);
+  const scale = largestSide > maxSize ? maxSize / largestSide : 1;
+  const width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
+  const height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Image preview could not be created.");
+  ctx.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", quality);
 }
 
 async function seedLocalCatalogFromStorefront() {
@@ -267,7 +304,7 @@ function fillForm(product) {
 async function uploadImage(file) {
   const existing = document.getElementById("existing-image-url").value;
   if (!file) return existing;
-  if (!client) return fileToDataUrl(file);
+  if (!client) return fileToOptimizedDataUrl(file);
 
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
@@ -503,6 +540,10 @@ async function saveProduct(event) {
       nextProducts.unshift(payload);
       saveLocalProducts(nextProducts);
       catalogCache = nextProducts;
+      activeSearch = "";
+      activeCategory = "all";
+      if (searchInput) searchInput.value = "";
+      if (categoryFilter) categoryFilter.value = "all";
       showToast("Product saved locally.");
       resetForm();
       renderProductList(applyFilters());
