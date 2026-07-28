@@ -153,6 +153,16 @@ function saveLocalProducts(products) {
   localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
 }
 
+function dedupeLocalProducts(products) {
+  const seen = new Set();
+  return products.filter(product => {
+    const id = String(product.id || "").trim();
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -160,6 +170,24 @@ function fileToDataUrl(file) {
     reader.onerror = () => reject(reader.error || new Error("Could not read image file."));
     reader.readAsDataURL(file);
   });
+}
+
+async function seedLocalCatalogFromStorefront() {
+  try {
+    const response = await fetch("app.js", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Unable to load storefront catalog (${response.status}).`);
+    const source = await response.text();
+    const fallbackMatch = source.match(/const fallbackProducts = (\[[\s\S]*?\n\]);/);
+    const siliconeMatch = source.match(/const siliconeCoverProducts = (\[[\s\S]*?\n\]);/);
+    if (!fallbackMatch || !siliconeMatch) throw new Error("Demo catalog blocks were not found.");
+
+    const fallbackProducts = Function(`return ${fallbackMatch[1]};`)();
+    const siliconeCoverProducts = Function(`return ${siliconeMatch[1]};`)();
+    return dedupeLocalProducts([...siliconeCoverProducts, ...fallbackProducts]).map(normalizeLocalProduct);
+  } catch (error) {
+    console.warn("Could not seed demo catalog from storefront source.", error);
+    return [];
+  }
 }
 
 function setPanelState(isLoggedIn) {
@@ -376,6 +404,12 @@ function renderProductList(items) {
 async function loadProducts() {
   if (!client) {
     catalogCache = readLocalProducts();
+    if (!catalogCache.length) {
+      catalogCache = await seedLocalCatalogFromStorefront();
+      if (catalogCache.length) {
+        saveLocalProducts(catalogCache);
+      }
+    }
     renderProductList(applyFilters());
     return;
   }
@@ -478,12 +512,18 @@ async function initAdmin() {
     if (setupWarning) {
       setupWarning.hidden = false;
       setupWarning.querySelector("strong").textContent = "Local demo mode is active.";
-      setupWarning.querySelector("span").textContent = "You can add, edit, delete, and preview products now. Connect Supabase later if you want live sync across devices.";
+      setupWarning.querySelector("span").textContent = "You can add, edit, delete, and preview products now. The first load uses the built-in catalog and saves changes in this browser.";
     }
     showAuthNotice("Demo mode", "Supabase is not configured, so changes are saved in this browser only.");
     setPanelState(true);
     bindFilters();
     catalogCache = readLocalProducts();
+    if (!catalogCache.length) {
+      catalogCache = await seedLocalCatalogFromStorefront();
+      if (catalogCache.length) {
+        saveLocalProducts(catalogCache);
+      }
+    }
     renderProductList(applyFilters());
     document.getElementById("logout-btn").hidden = true;
     return;
