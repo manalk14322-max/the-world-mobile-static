@@ -2597,6 +2597,7 @@ body.menu-drawer-open .shop-header {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   flex: 1;
+  min-width: 0;
 }
 
 .footer-contact-pill {
@@ -2609,12 +2610,20 @@ body.menu-drawer-open .shop-header {
   border: 1px solid rgba(0, 78, 189, 0.08);
   color: var(--text-secondary);
   box-shadow: 0 8px 18px rgba(7, 28, 63, 0.05);
+  min-width: 0;
 }
 
 .footer-contact-pill i {
   color: var(--color-primary);
   font-size: 18px;
   flex: 0 0 auto;
+}
+
+.footer-contact-pill span {
+  min-width: 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .footer-bottom {
@@ -2836,6 +2845,10 @@ body.menu-drawer-open .shop-header {
   .footer-contact-strip {
     width: 100%;
     grid-template-columns: 1fr;
+  }
+
+  .footer-contact-pill {
+    align-items: flex-start;
   }
 
   .contact-card {
