@@ -2471,24 +2471,41 @@ body.menu-drawer-open .shop-header {
 
 /* Contact and Footer */
 .footer-section {
-  background: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(244,248,252,0.98)),
+    radial-gradient(circle at top left, rgba(0, 78, 189, 0.05), transparent 34%);
   border-top: 1px solid rgba(7, 28, 63, 0.06);
-  padding: 80px 0 30px;
-  margin-top: 100px;
+  padding: 72px 0 28px;
+  margin-top: 96px;
+}
+
+.footer-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding-bottom: 30px;
+  margin-bottom: 34px;
+  border-bottom: 1px solid rgba(7, 28, 63, 0.06);
+}
+
+.footer-brand-block {
+  max-width: 540px;
 }
 
 .footer-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
-  gap: 40px;
-  margin-bottom: 60px;
+  gap: 32px;
+  margin-bottom: 42px;
 }
 
-.footer-logo-col p {
+.footer-brand-block p {
   color: var(--text-secondary);
   font-size: 14px;
   margin-top: 16px;
   margin-bottom: 24px;
+  max-width: 56ch;
 }
 
 .social-links {
@@ -2518,11 +2535,12 @@ body.menu-drawer-open .shop-header {
 }
 
 .footer-col h4 {
-  font-size: 16px;
-  margin-bottom: 24px;
+  font-size: 15px;
+  margin-bottom: 20px;
   position: relative;
   padding-bottom: 8px;
   color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .footer-col h4::after {
@@ -2538,7 +2556,7 @@ body.menu-drawer-open .shop-header {
 .footer-links {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .footer-links a {
@@ -2547,6 +2565,7 @@ body.menu-drawer-open .shop-header {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  width: fit-content;
 }
 
 .footer-links a:hover {
@@ -2557,7 +2576,7 @@ body.menu-drawer-open .shop-header {
 .footer-contact-info {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .contact-item {
@@ -2573,9 +2592,34 @@ body.menu-drawer-open .shop-header {
   margin-top: 3px;
 }
 
+.footer-contact-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  flex: 1;
+}
+
+.footer-contact-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 78, 189, 0.08);
+  color: var(--text-secondary);
+  box-shadow: 0 8px 18px rgba(7, 28, 63, 0.05);
+}
+
+.footer-contact-pill i {
+  color: var(--color-primary);
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(7, 28, 63, 0.06);
-  padding-top: 30px;
+  padding-top: 26px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2783,6 +2827,15 @@ body.menu-drawer-open .shop-header {
   
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-top-bar {
+    flex-direction: column;
+  }
+
+  .footer-contact-strip {
+    width: 100%;
+    grid-template-columns: 1fr;
   }
 
   .contact-card {
@@ -3656,6 +3709,15 @@ body.menu-drawer-open .shop-header {
   .footer-bottom,
   .footer-bottom-links {
     width: 100%;
+  }
+
+  .footer-top-bar {
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
   }
 }
 
