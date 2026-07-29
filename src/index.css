@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-surface font-sans antialiased text-slate-100;
+}
+
+select option {
+  @apply bg-surface-raised text-white;
+}
