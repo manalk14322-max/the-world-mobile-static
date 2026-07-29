@@ -68,6 +68,7 @@ const STORE_CATEGORIES = [
   { key: "photo-cover", name: "Photo Covers", name_es: "Fundas Personalizadas", icon: "ti-paint" },
   { key: "iphone-covers", name: "iPhone Covers", name_es: "Fundas iPhone", icon: "ti-brand-apple" },
   { key: "samsung-covers", name: "Samsung Covers", name_es: "Fundas Samsung", icon: "ti-device-mobile" },
+  { key: "samsung-silicone", name: "Samsung Silicone", name_es: "Silicona Samsung", icon: "ti-device-watch" },
   { key: "redmi-covers", name: "Redmi Covers", name_es: "Fundas Redmi", icon: "ti-device-mobile-rotated" },
   { key: "oppo-covers", name: "Oppo Covers", name_es: "Fundas Oppo", icon: "ti-bolt" },
   { key: "google-pixel", name: "Google Pixel", name_es: "Google Pixel", icon: "ti-brand-google" },
@@ -202,6 +203,24 @@ const fallbackProducts = [
     image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=400&auto=format&fit=crop",
     description: "Individual metal frame protective glass rings for camera lenses. High optical transparency.",
     options: ["iPhone 15 Pro/Max", "iPhone 14 Pro/Max", "Samsung S24 Ultra"]
+  },
+  {
+    id: "iphone-full-camera-protector",
+    title: "iPhone Full Camera Protector",
+    category: "camera-protectors",
+    price: 14.99,
+    image: "assets/hero-bg.png",
+    description: "Clear full-coverage camera protector for iPhone models with high-transparency tempered glass.",
+    options: ["11 Pro", "11 Pro Max", "12 Mini", "12", "12 Pro", "12 Pro Max", "13", "13 Pro", "13 Pro Max", "14 Pro", "14 Plus", "14 Pro Max", "15", "15 Pro", "15 Pro Max", "16", "16 Plus", "16 Pro", "16 Pro Max", "17", "17 Plus", "17 Pro", "17 Pro Max"]
+  },
+  {
+    id: "samsung-full-camera-protector",
+    title: "Samsung Full Camera Protector",
+    category: "camera-protectors",
+    price: 14.99,
+    image: "assets/hero-bg.png",
+    description: "Full camera lens protector for Samsung Galaxy models with premium glass coverage.",
+    options: ["S24", "S24 Plus", "S24 Ultra", "S25", "S25 Plus", "S25 Ultra", "S26", "S26 Edge", "S26 Plus", "S26 Ultra"]
   },
   // 10. Smart Watches
   {
@@ -544,6 +563,24 @@ const siliconeCoverProducts = [
   }
 ];
 
+const folder1ImageFiles = [
+  "sim (1).jpeg",
+  "sim (2).jpeg",
+  "sim (3).jpeg",
+  "sim (4).jpeg",
+  "sim (5).jpeg"
+];
+
+const folder1Products = folder1ImageFiles.map((filename, index) => ({
+  id: `sim-card-${String(index + 1).padStart(3, '0')}`,
+  title: `Prepaid SIM Card Pack ${index + 1}`,
+  category: "sim-cards",
+  price: 9.99,
+  image: `images/1/${filename}`,
+  description: "Prepaid SIM card package with local and international roaming options.",
+  options: ["Starter SIM", "Roaming SIM", "Data SIM", "Micro/Nano SIM Adapter"]
+}));
+
 function dedupeProductCatalog(productList) {
   const seenIds = new Set();
   const seenImages = new Set();
@@ -562,7 +599,7 @@ function dedupeProductCatalog(productList) {
   });
 }
 
-const localCatalogProducts = dedupeProductCatalog([...siliconeCoverProducts, ...fallbackProducts]);
+const localCatalogProducts = dedupeProductCatalog([...siliconeCoverProducts, ...fallbackProducts, ...folder1Products]);
 let products = [...localCatalogProducts];
 
 function getSupabaseConfig() {
@@ -944,9 +981,17 @@ function updateCategoryPageHeader(cat) {
   if (subtitle) {
     subtitle.textContent = cat.key === "all"
       ? t("category_page_subtitle_all", "Browse all premium covers, accessories, protectors, phones, watches, and repair essentials in one place.")
-      : t("category_page_subtitle_category", `Browse ${getCategoryLabel(cat).toLowerCase()} available at The World Mobile.`, { category: getCategoryLabel(cat).toLowerCase() });
+      : cat.key === "samsung-silicone"
+        ? t("category_page_subtitle_samsung_silicone", "Discover our soft Samsung silicone cases designed for comfort, color, and everyday protection.")
+        : t("category_page_subtitle_category", `Browse ${getCategoryLabel(cat).toLowerCase()} available at The World Mobile.`, { category: getCategoryLabel(cat).toLowerCase() });
   }
   if (badge) badge.innerHTML = `<i class="ti ${cat.icon}"></i> ${getCategoryLabel(cat)}`;
+
+  const heroPanel = document.querySelector(".category-page-panel");
+  if (heroPanel) {
+    heroPanel.classList.toggle("category-samsung-silicone", cat.key === "samsung-silicone");
+  }
+
   document.title = `${getCategoryLabel(cat)} | The World Mobile`;
 }
 
@@ -955,13 +1000,14 @@ function updateProductPage() {
 
   const params = new URLSearchParams(window.location.search);
   const productId = params.get("product");
-  const prod = products.find(item => item.id === productId) || products[0];
+  const prod = productId ? products.find(item => item.id === productId) : null;
 
   const page = document.getElementById("product-page");
   const empty = document.getElementById("product-page-empty");
-  if (!prod) {
+  if (!productId || !prod) {
     if (page) page.style.display = "none";
     if (empty) empty.style.display = "block";
+    document.title = `Product not found | The World Mobile`;
     return;
   }
 
@@ -1077,7 +1123,7 @@ function initCategoryTabs() {
     tab.className = `category-tab ${selectedCategory === cat.key ? 'active' : ''}`;
     tab.setAttribute("data-category", cat.key);
     tab.href = getCategoryUrl(cat);
-    tab.innerHTML = `<i class="ti ${cat.icon}"></i> ${cat.name}`;
+    tab.innerHTML = `<i class="ti ${cat.icon}"></i> ${getCategoryLabel(cat)}`;
     
     tab.addEventListener("click", (event) => {
       if (isCategoryPage() && !cat.target) {

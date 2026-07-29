@@ -4,6 +4,9 @@ const client = hasConfig ? window.supabase.createClient(cfg.url, cfg.anonKey) : 
 const tableName = cfg.productsTable || "products";
 const bucketName = cfg.storageBucket || "product-images";
 const LOCAL_PRODUCTS_KEY = "twm_local_products";
+const LOCAL_DB_NAME = "twm-local-catalog";
+const LOCAL_DB_VERSION = 1;
+const LOCAL_DB_STORE = "products";
 const isLocalMode = !hasConfig;
 
 const CATEGORY_LABELS = {
@@ -184,6 +187,66 @@ function saveLocalProducts(products) {
   }
 }
 
+function openLocalCatalogDb() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("IndexedDB is not supported in this browser."));
+      return;
+    }
+
+    const request = window.indexedDB.open(LOCAL_DB_NAME, LOCAL_DB_VERSION);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(LOCAL_DB_STORE)) {
+        db.createObjectStore(LOCAL_DB_STORE, { keyPath: "id" });
+      }
+    };
+
+    request.onerror = () => reject(request.error || new Error("Could not open local catalog storage."));
+    request.onsuccess = () => resolve(request.result);
+  });
+}
+
+async function readLocalProductsFromDb() {
+  const db = await openLocalCatalogDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOCAL_DB_STORE, "readonly");
+    const store = tx.objectStore(LOCAL_DB_STORE);
+    const request = store.getAll();
+
+    request.onerror = () => reject(request.error || new Error("Could not read saved products."));
+    request.onsuccess = () => resolve(Array.isArray(request.result) ? request.result.map(normalizeLocalProduct) : []);
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error || new Error("Could not read saved products."));
+    };
+  });
+}
+
+async function saveLocalProductsToDb(products) {
+  const db = await openLocalCatalogDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LOCAL_DB_STORE, "readwrite");
+    const store = tx.objectStore(LOCAL_DB_STORE);
+
+    store.clear();
+    products.forEach(product => {
+      store.put(product);
+    });
+
+    tx.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+    tx.onerror = () => {
+      db.close();
+      reject(tx.error || new Error("Could not save products."));
+    };
+  });
+}
+
 function dedupeLocalProducts(products) {
   const seen = new Set();
   return products.filter(product => {
@@ -279,6 +342,27 @@ async function seedLocalCatalogFromStorefront() {
     console.warn("Could not seed demo catalog from storefront source.", error);
     return [];
   }
+}
+
+async function readLocalCatalog() {
+  try {
+    const dbProducts = await readLocalProductsFromDb();
+    if (dbProducts.length) return dbProducts;
+  } catch (error) {
+    console.warn("IndexedDB local catalog could not be read.", error);
+  }
+
+  const localProducts = readLocalProducts();
+  if (localProducts.length) {
+    try {
+      await saveLocalProductsToDb(localProducts);
+    } catch (error) {
+      console.warn("Could not migrate localStorage catalog to IndexedDB.", error);
+    }
+    return localProducts;
+  }
+
+  return [];
 }
 
 function setPanelState(isLoggedIn) {
@@ -506,11 +590,20 @@ function renderProductList(items) {
 
 async function loadProducts() {
   if (!client) {
-    catalogCache = readLocalProducts();
+    catalogCache = await readLocalCatalog();
     if (!catalogCache.length) {
       catalogCache = await seedLocalCatalogFromStorefront();
       if (catalogCache.length) {
-        saveLocalProducts(catalogCache);
+        try {
+          await saveLocalProductsToDb(catalogCache);
+        } catch (error) {
+          console.warn("Could not seed IndexedDB catalog.", error);
+        }
+        try {
+          saveLocalProducts(catalogCache);
+        } catch (error) {
+          console.warn("Could not seed localStorage catalog.", error);
+        }
       }
     }
     renderProductList(applyFilters());
@@ -576,9 +669,21 @@ async function saveProduct(event) {
     }
 
     if (!client) {
-      const localProducts = readLocalProducts();
+      const localProducts = await readLocalCatalog();
       const nextProducts = localProducts.filter(item => item.id !== id);
       nextProducts.unshift(payload);
+
+      try {
+        await saveLocalProductsToDb(nextProducts);
+      } catch (storageError) {
+        console.warn("IndexedDB save failed, trying localStorage fallback.", storageError);
+        try {
+          saveLocalProducts(nextProducts);
+        } catch (fallbackError) {
+          console.warn("LocalStorage fallback failed.", fallbackError);
+          throw fallbackError;
+        }
+      }
 
       try {
         saveLocalProducts(nextProducts);
@@ -596,7 +701,12 @@ async function saveProduct(event) {
               const smallerPayload = { ...payload, image_url: smallerImageUrl };
               const smallerNextProducts = localProducts.filter(item => item.id !== id);
               smallerNextProducts.unshift(smallerPayload);
-              saveLocalProducts(smallerNextProducts);
+              await saveLocalProductsToDb(smallerNextProducts);
+              try {
+                saveLocalProducts(smallerNextProducts);
+              } catch (fallbackError) {
+                console.warn("Could not write compact catalog to localStorage.", fallbackError);
+              }
               nextProducts.length = 0;
               nextProducts.push(...smallerNextProducts);
               payload.image_url = smallerImageUrl;
